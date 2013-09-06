@@ -8,5 +8,23 @@
     <artifactId>reviewSearchHelper</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.directory.studio</groupId>
+            <artifactId>org.apache.commons.codec</artifactId>
+            <version>1.8</version>
+        </dependency>
+
+    </dependencies>
+
+    <scm>
+        <connection>scm:git:https://github.com/helgagu/reviewSearchHelper.git</connection>
+        <developerConnection>scm:git:https://github.com/helgagu/reviewSearchHelper.git</developerConnection>
+    </scm>
     
 </project>
