@@ -11,17 +11,20 @@ public class Constants {
     public static final String AWSACCESS_KEYID = "AKIAJDNPK4ZI5JYS32AQ";
     public static final String AWSACCESS_SECRET = "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";
 
-    private static final String REQUEST_URI = "/onca/xml";
-    private static final String REQUEST_METHOD = "GET";
-    public static final String ENDPOINT_US = "http://webservices.amazon.com";
-    public static final String ENDPOINT_CA = "http://webservices.amazon.ca";
-    public static final String ENDPOINT_CN = "http://webservices.amazon.cn";
-    public static final String ENDPOINT_DE = "http://webservices.amazon.de";
-    public static final String ENDPOINT_ES = "http://webservices.amazon.es";
-    public static final String ENDPOINT_FR = "http://webservices.amazon.fr";
-    public static final String ENDPOINT_IT = "http://webservices.amazon.it";
-    public static final String ENDPOINT_JP = "http://webservices.amazon.co.jp";
-    public static final String ENDPOINT_UK = "http://webservices.amazon.co.uk";
+    public static final String REQUEST_URI = "/onca/xml";
+    public static final String REQUEST_METHOD_GET = "GET";
+    public static final String NEWLINE = "\n";
+    public static final String HTTP = "http://";
+
+    public static final String ENDPOINT_US = "webservices.amazon.com";
+    public static final String ENDPOINT_CA = "webservices.amazon.ca";
+    public static final String ENDPOINT_CN = "webservices.amazon.cn";
+    public static final String ENDPOINT_DE = "webservices.amazon.de";
+    public static final String ENDPOINT_ES = "webservices.amazon.es";
+    public static final String ENDPOINT_FR = "webservices.amazon.fr";
+    public static final String ENDPOINT_IT = "webservices.amazon.it";
+    public static final String ENDPOINT_JP = "webservices.amazon.co.jp";
+    public static final String ENDPOINT_UK = "webservices.amazon.co.uk";
     public static final String SERVICE = "AWSECommerceService";
 
     public static final String URL_ENCODED_SPACE = "%20";
@@ -29,5 +32,14 @@ public class Constants {
     public static final String PARAMETER_SEPARATOR = "&";
 
     public static final String PARAMETER_OPERATION = "Operation";
+    public static final String PARAMETER_AWSACCESSKEYID = "AWSAccessKeyId";
+    public static final String PARAMETER_TIMESTAMP = "Timestamp";
+    public static final String PARAMETER_ASSOCIATETAG = "AssociateTag";
+    public static final String PARAMETER_SERVICE = "Service";
+    public static final String PARAMETER_ITEMID = "ItemId";
+    public static final String PARAMETER_SIGNATURE = "Signature";
+
+
     public static final String VALUE_ITEMSEARCH = "ItemSearch";
+    public static final String VALUE_ITEMLOOKUP = "ItemLookup";
 }

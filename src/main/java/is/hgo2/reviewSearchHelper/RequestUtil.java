@@ -2,23 +2,12 @@ package is.hgo2.reviewSearchHelper;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TimeZone;
-import java.util.TreeMap;
-
+import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import com.sun.jersey.core.util.Base64;
 
-import org.apache.commons.codec.binary.Base64;
-
-static import is.hgo2.reviewSearchHelper.Constants.*
+import static is.hgo2.reviewSearchHelper.Constants.*;
 
 /**
  * All requests sent to the amazon interface need to be authenticated using
@@ -27,7 +16,7 @@ static import is.hgo2.reviewSearchHelper.Constants.*
  * @author Helga
  * @since 2013-03
  */
-public class HmacFilter {
+public class RequestUtil {
 
     private static final String UTF8_CHARSET = "UTF-8";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
@@ -35,33 +24,46 @@ public class HmacFilter {
     private SecretKeySpec secretKeySpec = null;
     private Mac mac = null;
 
-    public SignedRequestsHelper() {
-        byte[] secretyKeyBytes = awsSecretKey.getBytes(UTF8_CHARSET);
+    public RequestUtil() throws Exception{
+        byte[] secretyKeyBytes = AWSACCESS_SECRET.getBytes(UTF8_CHARSET);
         secretKeySpec =
                 new SecretKeySpec(secretyKeyBytes, HMAC_SHA256_ALGORITHM);
         mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
         mac.init(secretKeySpec);
     }
 
-    public String sign(Map<String, String> params) {
-        params.put("AWSAccessKeyId", awsAccessKeyId);
-        params.put("Timestamp", timestamp());
+    public String getSignature(Map<String, String> params, String endpoint) {
 
-        SortedMap<String, String> sortedParamMap =
-                new TreeMap<String, String>(params);
-        String canonicalQS = canonicalize(sortedParamMap);
-        String toSign =
-                REQUEST_METHOD + "\n"
-                        + endpoint + "\n"
-                        + REQUEST_URI + "\n"
-                        + canonicalQS;
+        String canonicalQS = canonicalize(params);
+        String toSign = getStringToSign(endpoint, canonicalQS);
+        return hmac(toSign);
+    }
 
-        String hmac = hmac(toSign);
-        String sig = percentEncodeRfc3986(hmac);
-        String url = "http://" + endpoint + REQUEST_URI + "?" +
-                canonicalQS + "&Signature=" + sig;
+    public String getRequest(Map<String, String> params, String endpoint){
 
-        return url;
+        params.put(PARAMETER_SIGNATURE, getSignature(params, endpoint));
+        String canonicalQS = canonicalize(params);
+
+        StringBuilder url = new StringBuilder();
+        url.append(HTTP);
+        url.append(endpoint);
+        url.append(REQUEST_URI);
+        url.append(ENDPOINT_SEPARATOR);
+        url.append(canonicalQS);
+
+        return url.toString();
+    }
+
+    private String getStringToSign(String endpoint, String canonicalQS) {
+        StringBuilder toSign = new StringBuilder();
+        toSign.append(REQUEST_METHOD_GET);
+        toSign.append(NEWLINE);
+        toSign.append(endpoint);
+        toSign.append(NEWLINE);
+        toSign.append(REQUEST_URI);
+        toSign.append(NEWLINE);
+        toSign.append(canonicalQS);
+        return toSign.toString();
     }
 
     private String hmac(String stringToSign) {
@@ -79,22 +81,17 @@ public class HmacFilter {
         return signature;
     }
 
-    private String timestamp() {
-        String timestamp = null;
-        Calendar cal = Calendar.getInstance();
-        DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        dfm.setTimeZone(TimeZone.getTimeZone("GMT"));
-        timestamp = dfm.format(cal.getTime());
-        return timestamp;
-    }
 
-    private String canonicalize(SortedMap<String, String> sortedParamMap)
+    private String canonicalize(Map<String, String> params)
     {
+        SortedMap<String, String> sortedParamMap =
+                new TreeMap<String, String>(params);
+
         if (sortedParamMap.isEmpty()) {
             return "";
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         Iterator<Map.Entry<String, String>> iter =
                 sortedParamMap.entrySet().iterator();
 
@@ -107,8 +104,7 @@ public class HmacFilter {
                 buffer.append("&");
             }
         }
-        String canonical = buffer.toString();
-        return canonical;
+        return buffer.toString();
     }
 
     private String percentEncodeRfc3986(String s) {
