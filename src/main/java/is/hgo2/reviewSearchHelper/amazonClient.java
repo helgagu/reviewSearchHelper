@@ -1,6 +1,7 @@
 package is.hgo2.reviewSearchHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
+import is.hgo2.reviewSearchHelper.amazonMessages.ItemLookupResponse;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,7 +48,9 @@ public class AmazonClient {
         String request = requestUtil.getRequest(params, ENDPOINT_US);
         System.out.println(request);
         ClientResponse response = httpClient.sendGetRequest(request);
-        System.out.println("Response: " + response.getEntity(String.class));
+        ItemLookupResponse convertedResponse = response.getEntity(ItemLookupResponse.class);
+        System.out.println(convertedResponse.getOperationRequest().getRequestProcessingTime());
+        System.out.println(convertedResponse.getItems().get(0).getItem().get(0).getASIN());
 
     }
 
