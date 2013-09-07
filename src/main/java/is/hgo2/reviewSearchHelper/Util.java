@@ -173,7 +173,7 @@ public class Util {
      * @param newline should append a newline between hashmap values
      * @return string which can be printed in the console or in a text file
      */
-    public String writeResults(Map<String, String> results, Boolean newline){
+    public String getFormattedResultString(Map<String, String> results, Boolean newline){
 
         StringBuilder builder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iter =
@@ -197,7 +197,7 @@ public class Util {
      *
      * @param itemSearchResponse the response object from an ItemSearch
      */
-    public void writeTitleList(ItemSearchResponse itemSearchResponse) {
+    public void getStringWithItemSearchResultsOnlyTitle(ItemSearchResponse itemSearchResponse) {
         StringBuilder result = new StringBuilder();
         for (Items items: itemSearchResponse.getItems()){
 
@@ -208,9 +208,9 @@ public class Util {
             for(Item item: items.getItem()){
                 Map<String, String> itemResults = new HashMap<>();
                 itemResults.put("Title: ", item.getItemAttributes().getTitle());
-                result.append(writeResults(itemResults, Boolean.TRUE));
+                result.append(getFormattedResultString(itemResults, Boolean.TRUE));
             }
-            result.append(writeResults(itemsResults, Boolean.TRUE));
+            result.append(getFormattedResultString(itemsResults, Boolean.TRUE));
 
             System.out.println(result.toString());
         }
@@ -222,7 +222,7 @@ public class Util {
      *
      * @param response the response object of the ItemSearch with responseGroup = BinSearch
      */
-    public void writeBinList(ItemSearchResponse response) {
+    public void getStringWithBinListResults(ItemSearchResponse response) {
         StringBuilder result = new StringBuilder();
         for (Items items: response.getItems()){
             Map<String, String> itemsResults = new HashMap<>();
@@ -238,10 +238,10 @@ public class Util {
                     Map<String, String> itemResults = new HashMap<>();
                     itemResults.put("BinName: ", binDetails.getBinName());
                     itemResults.put("BinItemCount: ", binDetails.getBinItemCount().toString());
-                    result.append(writeResults(itemResults, Boolean.TRUE));
+                    result.append(getFormattedResultString(itemResults, Boolean.TRUE));
                 }
 
-                result.append(writeResults(itemsResults, Boolean.TRUE));
+                result.append(getFormattedResultString(itemsResults, Boolean.TRUE));
             }
 
 
@@ -276,7 +276,7 @@ public class Util {
 
     /**
      * This fetches all the browseNodesIds in a bin list returned by an ItemSearch with responseGroup = BinSearch
-     * if the binItemCount is more than 100 and needs to be narrowed more.
+     * if the binItemCount is more than 100 and needs to be narrowed more. <p><p>
      *
      * Exclusion criteria can also be applied, the exclusion criteria applied are defined in ExclusionCriteria.excludeBrowseNodeId(bin name).
      * The exclusion criteria were analyzed manually.

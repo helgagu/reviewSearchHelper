@@ -33,12 +33,12 @@ public class AmazonClient {
     }
 
     /**
-     * Creates the base API request with common mandatory parameters:
-     * - AWS Access KeyID
-     * - Timestamp (now)
-     * - Associate tag
-     * - Service
-     * - Operation
+     * Creates the base API request with common mandatory parameters:  <p>
+     * - AWS Access KeyID  <p>
+     * - Timestamp (now)  <p>
+     * - Associate tag   <p>
+     * - Service       <p>
+     * - Operation     <p>
      * @param operation which operation the request should execute e.g. ItemSearch, ItemLookup
      * @return Hashmap with the common mandatory parameters (key = parameter name; value = parameter value)
      */
@@ -56,13 +56,13 @@ public class AmazonClient {
 
     /**
      * Creates the standard search request used in this project
-     * according to the selection strategy for the systematic review.
+     * according to the selection strategy for the systematic review. <p><p>
      *
-     * SearchIndex = Books
-     * Power search parameters=keywords:%s and language:english
-     * Sort = relevancerank, sorted by how often and where the keyword appears, how closely multiple keywords occur in descriptions and how often customers purchased the products they found using the keyword {Amazon 2011}.
-     * MerchantId = Amazon, only look at available books that are sold by Amazon - excludes books sold by third party sellers
-     * Availability = available, excludes unavailable books
+     * SearchIndex = Books <p>
+     * Power search parameters=keywords:%s and language:english  <p>
+     * Sort = relevancerank, sorted by how often and where the keyword appears, how closely multiple keywords occur in descriptions and how often customers purchased the products they found using the keyword {Amazon 2011}. <p>
+     * MerchantId = Amazon, only look at available books that are sold by Amazon - excludes books sold by third party sellers <p>
+     * Availability = available, excludes unavailable books   <p>
      *
      * @param keyword the search keyword which replaces %s (see above), this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
      * @return Hashmap with the common mandatory parameters and the standard search request parameters (key = parameter name; value = parameter value)
@@ -80,10 +80,10 @@ public class AmazonClient {
     }
 
     /**
-     * Creates a binSearch request using the standard search request with the addition of these parameters:
+     * Creates a binSearch request using the standard search request with the addition of these parameters:  <p>
      *
-     * ResponseGroup = SearchBins, this tells the request to return a list of bins, which are categorized lists by subject connected to a specific browseNodeId.
-     * BrowseNodeId = this is the id of a browseNode which is specified in a bin, narrowing the results to just the ones in this browseNode. A browseNode is a book category which is part of an organizational hierarchy.
+     * ResponseGroup = SearchBins, this tells the request to return a list of bins, which are categorized lists by subject connected to a specific browseNodeId.  <p>
+     * BrowseNodeId = this is the id of a browseNode which is specified in a bin, narrowing the results to just the ones in this browseNode. A browseNode is a book category which is part of an organizational hierarchy.  <p>
      *
      * @param keyword the search keyword, this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
      * @param browseNodeId the id of a specific browseNode (bin)
@@ -118,10 +118,10 @@ public class AmazonClient {
 
     /**
      * This fetches a bin list for a standard search request for a specific keyword using the binSearch request.
-     * For each bin in the bin list the browseNodeIds are extracted (the subject categories e.g. Business & Investing, Computers & Technology)
+     * For each bin in the bin list the browseNodeIds are extracted (the subject categories e.g. Business & Investing, Computers & Technology)  <p><p>
      *
      * A binSearch request is sent for each browseNodeId, extracting the child browseNodeIds, going down the hierarchical organization of the categories (browseNodes) until there
-     * are no more child browseNodes or the binItemCount is less than 100.
+     * are no more child browseNodes or the binItemCount is less than 100.   <p><p>
      *
      * This is done because Amazon does not allow to fetch more than 100 results from an ItemSearch request. The categories are used to narrow the search for each request to keep the result set below 100.
      * A request will then be sent for each child browseNode which is not excluded by the exclusion criteria.
@@ -135,7 +135,7 @@ public class AmazonClient {
         Map<String, String> originalRequest = getBinSearchRequest(keyword, null);
         ItemSearchResponse originalResponse = sendSearchRequest(originalRequest, ENDPOINT_US);
         System.out.println("List for original request");
-        util.writeBinList(originalResponse);
+        util.getStringWithBinListResults(originalResponse);
         List<String> originalBrowseNodeIds = util.getBrowseNodeIds(originalResponse, useBinExclusionCriteria);
         getAllBrowseNodes(keyword, originalBrowseNodeIds, originalResponse, useBinExclusionCriteria);
 
@@ -159,7 +159,7 @@ public class AmazonClient {
                 Map<String, String> browseNodeRequest = getBinSearchRequest(keyword, browseNodeId);
                 ItemSearchResponse browseNodeResponse = sendSearchRequest(browseNodeRequest, ENDPOINT_US);
                 System.out.println("List for browseNodeId: " + util.getBrowseNodeIdName(originalResponse, browseNodeId));
-                util.writeBinList(browseNodeResponse);
+                util.getStringWithBinListResults(browseNodeResponse);
                 List<String> browseNodeRequestBrowseNodeIds = util.getBrowseNodeIds(browseNodeResponse, useBinExclusionCriteria);
                 if(!browseNodeRequestBrowseNodeIds.isEmpty()){
                     TimeUnit.SECONDS.sleep(5);
