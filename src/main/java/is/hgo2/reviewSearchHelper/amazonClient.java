@@ -1,7 +1,9 @@
 package is.hgo2.reviewSearchHelper;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import com.sun.jersey.api.client.ClientResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -19,6 +21,8 @@ import static is.hgo2.reviewSearchHelper.Constants.*;
 public class AmazonClient {
 
     private static DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static DateFormat dateStamp = new SimpleDateFormat("yyyyMMddHHmm");
+
     private HttpClient httpClient;
     private Util util;
 
@@ -26,10 +30,9 @@ public class AmazonClient {
      * Initializer
      * @throws Exception
      */
-    public AmazonClient() throws Exception{
+    public AmazonClient(Util util) throws Exception{
         this.httpClient = new HttpClient();
-        this.util = new Util();
-
+        this.util = util;
     }
 
     /**
@@ -99,7 +102,6 @@ public class AmazonClient {
         return params;
     }
 
-
     /**
      * Sends an ItemSearch request to Amazon.
      *
@@ -116,65 +118,9 @@ public class AmazonClient {
 
     }
 
-    /**
-     * This fetches a bin list for a standard search request for a specific keyword using the binSearch request.
-     * For each bin in the bin list the browseNodeIds are extracted (the subject categories e.g. Business & Investing, Computers & Technology)  <p><p>
-     *
-     * A binSearch request is sent for each browseNodeId, extracting the child browseNodeIds, going down the hierarchical organization of the categories (browseNodes) until there
-     * are no more child browseNodes or the binItemCount is less than 100.   <p><p>
-     *
-     * This is done because Amazon does not allow to fetch more than 100 results from an ItemSearch request. The categories are used to narrow the search for each request to keep the result set below 100.
-     * A request will then be sent for each child browseNode which is not excluded by the exclusion criteria.
-     *
-     * @param keyword the search keyword, this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
-     * @param useBinExclusionCriteria true = exclude categories by using the exclusion criteria in the method ExclusionCriteria.excludeBrowseNodeId(name of bin), false = do not exclude any categories
-     * @throws Exception
-     */
-    public void getAllBrowseNodes(String keyword, Boolean useBinExclusionCriteria) throws Exception{
-
-        Map<String, String> originalRequest = getBinSearchRequest(keyword, null);
-        ItemSearchResponse originalResponse = sendSearchRequest(originalRequest, ENDPOINT_US);
-        System.out.println("List for original request");
-        util.getStringWithBinListResults(originalResponse);
-        List<String> originalBrowseNodeIds = util.getBrowseNodeIds(originalResponse, useBinExclusionCriteria);
-        getAllBrowseNodes(keyword, originalBrowseNodeIds, originalResponse, useBinExclusionCriteria);
-
-
-    }
-
-    /**
-     * Recursive method to loop through all the bin list results, find their children going down the hierarchical organization of the categories (browseNodes) until there are no more children or the binItemCount is less than 100.
-     *
-     * @param keyword the search keyword, this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
-     * @param browseNodeIds the browseNodeIds of the parent node
-     * @param originalResponse the response of the binSearch request of the parent
-     * @param useBinExclusionCriteria true = exclude categories by using the exclusion criteria in the method ExclusionCriteria.excludeBrowseNodeId(name of bin), false = do not exclude any categories
-     * @throws Exception
-     */
-    public void getAllBrowseNodes(String keyword, List<String> browseNodeIds, ItemSearchResponse originalResponse, Boolean useBinExclusionCriteria) throws Exception{
-
-
-        for(String browseNodeId: browseNodeIds){
-
-                Map<String, String> browseNodeRequest = getBinSearchRequest(keyword, browseNodeId);
-                ItemSearchResponse browseNodeResponse = sendSearchRequest(browseNodeRequest, ENDPOINT_US);
-                System.out.println("List for browseNodeId: " + util.getBrowseNodeIdName(originalResponse, browseNodeId));
-                util.getStringWithBinListResults(browseNodeResponse);
-                List<String> browseNodeRequestBrowseNodeIds = util.getBrowseNodeIds(browseNodeResponse, useBinExclusionCriteria);
-                if(!browseNodeRequestBrowseNodeIds.isEmpty()){
-                    TimeUnit.SECONDS.sleep(5);
-                    getAllBrowseNodes(keyword, browseNodeRequestBrowseNodeIds, browseNodeResponse, useBinExclusionCriteria);
-                }
-        }
-
-    }
-
-
-    public static void main(String [] args) throws Exception{
-
-        AmazonClient client = new AmazonClient();
-        client.getAllBrowseNodes("Productivity", Boolean.FALSE);
-
+    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId) {
+        Map<String, String> originalRequest = getBinSearchRequest(keyword, browseNodeId);
+        return sendSearchRequest(originalRequest, ENDPOINT_US);
     }
 
 }

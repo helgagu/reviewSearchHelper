@@ -1,11 +1,12 @@
 package is.hgo2.reviewSearchHelper;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import au.com.bytecode.opencsv.CSVWriter;
 import com.sun.jersey.core.util.Base64;
 import is.hgo2.reviewSearchHelper.amazonMessages.*;
 
@@ -21,6 +22,7 @@ public class Util {
 
     private static final String UTF8_CHARSET = "UTF-8";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
+    private final CsvFileMaker csvFileMaker = new CsvFileMaker();
 
     private SecretKeySpec secretKeySpec = null;
     private Mac mac = null;
@@ -50,7 +52,7 @@ public class Util {
 
         String canonicalQS = canonicalize(params);
         String toSign = getStringToSign(endpoint, canonicalQS);
-        return hmac(toSign);
+        return calculateHmac(toSign);
     }
 
     /**
@@ -67,7 +69,7 @@ public class Util {
 
         StringBuilder url = new StringBuilder();
         url.append(HTTP);
-        url.append(endpoint);
+        url.append(AMAZON_URI + endpoint);
         url.append(REQUEST_URI);
         url.append(ENDPOINT_SEPARATOR);
         url.append(canonicalQS);
@@ -86,7 +88,7 @@ public class Util {
         StringBuilder toSign = new StringBuilder();
         toSign.append(REQUEST_METHOD_GET);
         toSign.append(NEWLINE);
-        toSign.append(endpoint);
+        toSign.append(AMAZON_URI + endpoint);
         toSign.append(NEWLINE);
         toSign.append(REQUEST_URI);
         toSign.append(NEWLINE);
@@ -100,7 +102,7 @@ public class Util {
      * @param stringToSign the string to apply the hmac to
      * @return value for the signature parameter
      */
-    private String hmac(String stringToSign) {
+    private String calculateHmac(String stringToSign) {
         String signature = null;
         byte[] data;
         byte[] rawHmac;
@@ -115,15 +117,13 @@ public class Util {
         return signature;
     }
 
-
     /**
      * This escapes special characters and formats the request string.
      *
      * @param params hashmap with the parameters for the request (key=parameter name; value=parameter value)
      * @return request string in the right format
      */
-    private String canonicalize(Map<String, String> params)
-    {
+    private String canonicalize(Map<String, String> params){
         SortedMap<String, String> sortedParamMap =
                 new TreeMap<String, String>(params);
 
@@ -167,7 +167,11 @@ public class Util {
     }
 
     /**
-     * To create a string with results
+     * To create a string with results formatted as: <p>
+     * key=value ; key=value ; etc.. <p>
+     * or with newline:<p>
+     * key=value ; <p>
+     * key=value ; <p>
      *
      * @param results hashmap of values to create a string (key = description; value = the result value)
      * @param newline should append a newline between hashmap values
@@ -182,7 +186,9 @@ public class Util {
         while (iter.hasNext()) {
             Map.Entry<String, String> kvpair = iter.next();
             builder.append(kvpair.getKey());
+            builder.append("= ");
             builder.append(kvpair.getValue());
+            builder.append(" ; ");
             if(newline){
                 builder.append(NEWLINE);
             }
@@ -217,119 +223,6 @@ public class Util {
     }
 
     /**
-     * To create a string with the total results and pages of an ItemSearch with responseGroup = BinSearch
-     * as well as a list of all the bin names and their binItemCount.
-     *
-     * @param response the response object of the ItemSearch with responseGroup = BinSearch
-     */
-    public void getStringWithBinListResults(ItemSearchResponse response) {
-        StringBuilder result = new StringBuilder();
-        for (Items items: response.getItems()){
-            Map<String, String> itemsResults = new HashMap<>();
-            itemsResults.put("Total Results: ", items.getTotalResults().toString());
-            itemsResults.put("Total Pages: ", items.getTotalPages().toString());
-
-            for(SearchBinSet bin: items.getSearchBinSets().getSearchBinSet()){
-
-
-                itemsResults.put("NarrowBy: ", bin.getNarrowBy());
-
-                for(Bin binDetails: bin.getBin()) {
-                    Map<String, String> itemResults = new HashMap<>();
-                    itemResults.put("BinName: ", binDetails.getBinName());
-                    itemResults.put("BinItemCount: ", binDetails.getBinItemCount().toString());
-                    result.append(getFormattedResultString(itemResults, Boolean.TRUE));
-                }
-
-                result.append(getFormattedResultString(itemsResults, Boolean.TRUE));
-            }
-
-
-            System.out.println(result.toString());
-        }
-    }
-
-    /**
-     * Find a BrowseNodeId name by finding the name of the bin for that browseNodeId.
-     *
-     * @param response the response object of the ItemSearch with responseGroup = BinSearch
-     * @param browseNodeId the id of a specific browseNode (category for a subject)
-     * @return string with the browseNodeId name
-     */
-    public String getBrowseNodeIdName(ItemSearchResponse response, String browseNodeId){
-
-        if(response != null){
-            for (Items items: response.getItems()){
-                for(SearchBinSet bin: items.getSearchBinSets().getSearchBinSet()){
-                    for(Bin binDetails: bin.getBin()) {
-                        for(Bin.BinParameter param: binDetails.getBinParameter()){
-                            if(param.getValue().equalsIgnoreCase(browseNodeId)){
-                                return binDetails.getBinName();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * This fetches all the browseNodesIds in a bin list returned by an ItemSearch with responseGroup = BinSearch
-     * if the binItemCount is more than 100 and needs to be narrowed more. <p><p>
-     *
-     * Exclusion criteria can also be applied, the exclusion criteria applied are defined in ExclusionCriteria.excludeBrowseNodeId(bin name).
-     * The exclusion criteria were analyzed manually.
-     *
-     * @param response the response object of the ItemSearch with responseGroup = BinSearch
-     * @param useExclusionCriteria true=use the exclusion criteria specified in method ExclusionCriteria.excludeBrowseNodeId(bin name), false=no exclusion criteria
-     * @return List of browseNodeIds
-     */
-    public List<String> getBrowseNodeIds(ItemSearchResponse response, Boolean useExclusionCriteria) {
-
-        List<String> browseNodeIds = new ArrayList();
-        for (Items items: response.getItems()){
-            for(SearchBinSet bin: items.getSearchBinSets().getSearchBinSet()){
-                for(Bin binDetails: bin.getBin()) {
-                    if(useExclusionCriteria){
-                        if(!ExclusionCriteria.excludeBrowseNodeId(binDetails.getBinName())){
-                            if(resultsMoreThanHundred(binDetails.getBinItemCount())) {
-                                for(Bin.BinParameter param: binDetails.getBinParameter()) {
-                                    browseNodeIds.add(param.getValue());
-                                }
-                            }
-                        }
-                    }
-                    else{
-                        if(resultsMoreThanHundred(binDetails.getBinItemCount())) {
-                            for(Bin.BinParameter param: binDetails.getBinParameter()) {
-                                browseNodeIds.add(param.getValue());
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-        return browseNodeIds;
-    }
-
-    /**
-     * Compares the binItemCount to see if it is greater than 100.
-     *
-     * @param binItemCount the amount of result items in a specific bin
-     * @return true=binItemCount is greater than 100, false=binItemCount is equal or smaller than 100
-     */
-    public Boolean resultsMoreThanHundred(BigInteger binItemCount){
-          if(binItemCount.compareTo(BigInteger.valueOf(100)) == 1){
-            //If binItemCount is greater than 100 return true. CompareTo returns 1 if greater than.
-            return Boolean.TRUE;
-          }
-
-          return Boolean.FALSE;
-    }
-
-    /**
      * Insert the keyword to the power search parameter value.
      * Power search = keywords:%s and language:english
      *
@@ -341,5 +234,7 @@ public class Util {
         return String.format(POWER_SEARCH_VALUE, keyword);
 
     }
+
+
 }
 

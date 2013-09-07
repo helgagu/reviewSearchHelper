@@ -11,7 +11,12 @@ public class Constants {
     public static final String REQUEST_URI = "/onca/xml";
     public static final String REQUEST_METHOD_GET = "GET";
     public static final String NEWLINE = "\n";
-    public static final String HTTP = "http://webservices.amazon.";
+    public static final String HTTP = "http://";
+    public static final String AMAZON_URI = "webservices.amazon.";
+
+    public static final String PATH_TO_SAVE_CSV = "C:\\Users\\Helga\\Dropbox\\MscProject\\searchStrategyEvidence\\amazonBinLists\\";
+    public static final String BINLIST_FILENAME = "HelgaGudrun_allBrowseNodes_noExclusionCriteria";
+    public static final String CSV_FILEEND = ".csv";
 
     public static final String ENDPOINT_US = "com";
     public static final String ENDPOINT_CA = "ca";
@@ -77,6 +82,22 @@ public class Constants {
     public static final String RELIGIONSPIRITUALITY_BROWSENODE = "Religion & Spirituality";
     public static final String ARTPHOTOGRAPHY_BROWSENODE = "Art & Photography";
 
+
+    //Array Indexes for BinList CSV columns
+    public static final int BINLIST_CSV_ARRAYSIZE = 13;
+    public static final int BROWSENODEID_ARRAYINDEX_BINLIST_CSV = 0;
+    public static final int BINNAME_ARRAYINDEX_BINLIST_CSV = 1;
+    public static final int BINITEMCOUNT_ARRAYINDEX_BINLIST_CSV = 2;
+    public static final int PARENTBROWSENODEID_ARRAYINDEX_BINLIST_CSV = 3;
+    public static final int PARENTBINNAME_ARRAYINDEX_BINLIST_CSV = 4;
+    public static final int SEARCHKEYWORD_ARRAYINDEX_BINLIST_CSV = 5;
+    public static final int NARROWEDBY_ARRAYINDEX_BINLIST_CSV = 6;
+    public static final int SEARCHINDEX_ARRAYINDEX_BINLIST_CSV = 7;
+    public static final int SORT_ARRAYINDEX_BINLIST_CSV = 8;
+    public static final int POWERSEARCH_ARRAYINDEX_BINLIST_CSV = 9;
+    public static final int AVAILABILITY_ARRAYINDEX_BINLIST_CSV = 10;
+    public static final int MERCHANTID_ARRAYINDEX_BINLIST_CSV = 11;
+    public static final int RESULTTIMESTAMP_ARRAYINDEX_BINLIST_CSV = 12;
 
 }
 
