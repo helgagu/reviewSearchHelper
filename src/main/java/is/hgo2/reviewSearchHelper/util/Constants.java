@@ -1,4 +1,4 @@
-package is.hgo2.reviewSearchHelper;
+package is.hgo2.reviewSearchHelper.util;
 
 /**
  * Static class with constants needed in multiple classes.
@@ -16,6 +16,7 @@ public class Constants {
 
     public static final String PATH_TO_SAVE_CSV = "C:\\Users\\Helga\\Dropbox\\MscProject\\searchStrategyEvidence\\amazonBinLists\\";
     public static final String BINLIST_FILENAME = "HelgaGudrun_allBrowseNodes_noExclusionCriteria";
+    public static final String AMAZON_RESPONSE_FILENAME = ".\\amazonResponses\\itemSearchResponse_";
     public static final String CSV_FILEEND = ".csv";
 
     public static final String ENDPOINT_US = "com";
@@ -73,6 +74,9 @@ public class Constants {
      */
     public static final String RELEVANCERANK_SORT_VALUE = "relevancerank";
     public static final String SEARCHBINS_RESPONSEGROUP_PARAMETER = "SearchBins";
+    public static final String LARGE_RESPONSEGROUP_PARAMETER = "Large";
+    public static final String ITEMATTRIBUTES_RESPONSEGROUP_PARAMETER = "ItemAttributes";
+    public static final String EDITORIALREVIEW_RESPONSEGROUP_PARAMETER = "EditorialReview";
     public static final String AVAILABILITY_VALUE = "Available";
     public static final String MERCHANTID_VALUE = "Amazon";
 

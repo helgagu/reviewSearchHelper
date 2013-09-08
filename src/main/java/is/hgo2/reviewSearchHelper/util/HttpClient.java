@@ -1,4 +1,4 @@
-package is.hgo2.reviewSearchHelper;
+package is.hgo2.reviewSearchHelper.util;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;

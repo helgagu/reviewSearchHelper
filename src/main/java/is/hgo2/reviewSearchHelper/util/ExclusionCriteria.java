@@ -1,6 +1,6 @@
-package is.hgo2.reviewSearchHelper;
+package is.hgo2.reviewSearchHelper.util;
 
-import static is.hgo2.reviewSearchHelper.Constants.*;
+import static is.hgo2.reviewSearchHelper.util.Constants.*;
 
 /**
  * Here is the logic for exclusion criteria.

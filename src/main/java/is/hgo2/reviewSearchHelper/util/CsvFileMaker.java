@@ -1,4 +1,4 @@
-package is.hgo2.reviewSearchHelper;
+package is.hgo2.reviewSearchHelper.util;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -16,7 +16,6 @@ import java.util.Map;
 
 public class CsvFileMaker {
     static DateFormat dateStamp = new SimpleDateFormat("yyyyMMddHHmm");
-    final BinSearch binSearch = new BinSearch(null);
 
     public static void closeCsvFile(CSVWriter pw) throws Exception {
         pw.flush();

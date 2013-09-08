@@ -1,16 +1,17 @@
-package is.hgo2.reviewSearchHelper;
+package is.hgo2.reviewSearchHelper.util;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import au.com.bytecode.opencsv.CSVWriter;
 import com.sun.jersey.core.util.Base64;
 import is.hgo2.reviewSearchHelper.amazonMessages.*;
 
-import static is.hgo2.reviewSearchHelper.Constants.*;
+import static is.hgo2.reviewSearchHelper.util.Constants.*;
 
 /**
  * This is a util class for creating and extracting information from requests and responses
@@ -23,6 +24,8 @@ public class Util {
     private static final String UTF8_CHARSET = "UTF-8";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
     private final CsvFileMaker csvFileMaker = new CsvFileMaker();
+    static DateFormat dateStamp = new SimpleDateFormat("yyyyMMddHHmmss");
+    private JaxbMessageConverter messageConverter;
 
     private SecretKeySpec secretKeySpec = null;
     private Mac mac = null;
@@ -38,6 +41,7 @@ public class Util {
                 new SecretKeySpec(secretyKeyBytes, HMAC_SHA256_ALGORITHM);
         mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
         mac.init(secretKeySpec);
+        messageConverter = new JaxbMessageConverter();
     }
 
     /**
@@ -235,6 +239,13 @@ public class Util {
 
     }
 
+    public void writeOriginalResponseToFile(ItemSearchResponse response) throws Exception{
 
+        String filename =  AMAZON_RESPONSE_FILENAME + dateStamp.format(new Date());
+        FileWriter responseFile = new FileWriter(filename);
+        responseFile.write(messageConverter.getMessage(ItemSearchResponse.class, response));
+        responseFile.flush();
+        responseFile.close();
+    }
 }
 

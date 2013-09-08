@@ -1,15 +1,15 @@
 package is.hgo2.reviewSearchHelper;
 
-import au.com.bytecode.opencsv.CSVWriter;
 import com.sun.jersey.api.client.ClientResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
+import is.hgo2.reviewSearchHelper.util.HttpClient;
+import is.hgo2.reviewSearchHelper.util.Util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-import static is.hgo2.reviewSearchHelper.Constants.*;
+import static is.hgo2.reviewSearchHelper.util.Constants.*;
 
 /**
  * This class creates and sends requests to the Amazon Product Advertising API.
@@ -21,8 +21,6 @@ import static is.hgo2.reviewSearchHelper.Constants.*;
 public class AmazonClient {
 
     private static DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    private static DateFormat dateStamp = new SimpleDateFormat("yyyyMMddHHmm");
-
     private HttpClient httpClient;
     private Util util;
 
@@ -82,6 +80,14 @@ public class AmazonClient {
 
     }
 
+    public Map<String, String> getLargeResponseGroupRequest(String keyword){
+
+        Map<String, String> params = createStandardSearchRequest(keyword);
+        params.put(RESPONSEGROUP_PARAMETER, LARGE_RESPONSEGROUP_PARAMETER);
+
+        return params;
+    }
+
     /**
      * Creates a binSearch request using the standard search request with the addition of these parameters:  <p>
      *
@@ -109,18 +115,27 @@ public class AmazonClient {
      * @param endpoint the Amazon locale to search, either; CA, CN, DE, ES, FR, IN, IT, JP, UK, US. Be aware of different requirements for different locales
      * @return the response as an ItemSearchResponse java object
      */
-    public ItemSearchResponse sendSearchRequest(Map<String, String> params, String endpoint){
+    public ItemSearchResponse sendSearchRequest(Map<String, String> params, String endpoint) throws Exception{
 
         String request = util.getRequest(params, endpoint);
         System.out.println(request);
         ClientResponse response = httpClient.sendGetRequest(request);
-        return response.getEntity(ItemSearchResponse.class);
+        ItemSearchResponse itemSearchResponse = response.getEntity(ItemSearchResponse.class);
+        util.writeOriginalResponseToFile(itemSearchResponse);
+        return itemSearchResponse;
 
     }
 
-    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId) {
+    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId) throws Exception{
         Map<String, String> originalRequest = getBinSearchRequest(keyword, browseNodeId);
         return sendSearchRequest(originalRequest, ENDPOINT_US);
+    }
+
+    public static void main(String [] args) throws Exception{
+
+        Util util1 = new Util();
+        AmazonClient amazonClient = new AmazonClient(util1);
+        amazonClient.sendSearchRequest(amazonClient.createStandardSearchRequest("Productivity"), ENDPOINT_US);
     }
 
 }

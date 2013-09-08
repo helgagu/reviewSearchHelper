@@ -5,6 +5,10 @@ import is.hgo2.reviewSearchHelper.amazonMessages.Bin;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.Items;
 import is.hgo2.reviewSearchHelper.amazonMessages.SearchBinSet;
+import is.hgo2.reviewSearchHelper.util.Constants;
+import is.hgo2.reviewSearchHelper.util.CsvFileMaker;
+import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
+import is.hgo2.reviewSearchHelper.util.Util;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
