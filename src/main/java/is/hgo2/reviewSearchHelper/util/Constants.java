@@ -15,8 +15,9 @@ public class Constants {
     public static final String AMAZON_URI = "webservices.amazon.";
 
     public static final String PATH_TO_SAVE_CSV = "C:\\Users\\Helga\\Dropbox\\MscProject\\searchStrategyEvidence\\amazonBinLists\\";
-    public static final String BINLIST_FILENAME = "HelgaGudrun_allBrowseNodes_noExclusionCriteria";
-    public static final String AMAZON_RESPONSE_FILENAME = ".\\amazonResponses\\itemSearchResponse_";
+    public static final String BINLIST_FILENAME = ".\\csvFiles\\listOfBrowseNodes";
+    public static final String AMAZON_RESPONSES_ITEMSEARCH_FILENAME = ".\\amazonResponses\\itemSearchResponse_";
+    public static final String AMAZON_RESPONSE_ITEMLOOKUP_FILENAME = ".\\amazonResponses\\itemLookupResponse_";
     public static final String CSV_FILEEND = ".csv";
 
     public static final String ENDPOINT_US = "com";
@@ -76,6 +77,7 @@ public class Constants {
     public static final String SEARCHBINS_RESPONSEGROUP_PARAMETER = "SearchBins";
     public static final String LARGE_RESPONSEGROUP_PARAMETER = "Large";
     public static final String ITEMATTRIBUTES_RESPONSEGROUP_PARAMETER = "ItemAttributes";
+    public static final String MEDIUM_RESPONSEGROUP_PARAMETER = "Medium";
     public static final String EDITORIALREVIEW_RESPONSEGROUP_PARAMETER = "EditorialReview";
     public static final String AVAILABILITY_VALUE = "Available";
     public static final String MERCHANTID_VALUE = "Amazon";
@@ -88,7 +90,7 @@ public class Constants {
 
 
     //Array Indexes for BinList CSV columns
-    public static final int BINLIST_CSV_ARRAYSIZE = 13;
+    public static final int BINLIST_CSV_ARRAYSIZE = 14;
     public static final int BROWSENODEID_ARRAYINDEX_BINLIST_CSV = 0;
     public static final int BINNAME_ARRAYINDEX_BINLIST_CSV = 1;
     public static final int BINITEMCOUNT_ARRAYINDEX_BINLIST_CSV = 2;
@@ -102,6 +104,9 @@ public class Constants {
     public static final int AVAILABILITY_ARRAYINDEX_BINLIST_CSV = 10;
     public static final int MERCHANTID_ARRAYINDEX_BINLIST_CSV = 11;
     public static final int RESULTTIMESTAMP_ARRAYINDEX_BINLIST_CSV = 12;
+    public static final int RESPONSELOCATION_ARRAYINDEX_BINLIST_CSV = 13;
 
+    public static final String PERSISTANCE_PROVIDER = "reviewSearchHelperEntityPU";
 }
+
 

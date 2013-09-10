@@ -1,6 +1,7 @@
 package is.hgo2.reviewSearchHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
+import is.hgo2.reviewSearchHelper.amazonMessages.ItemLookupResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
 import is.hgo2.reviewSearchHelper.util.HttpClient;
 import is.hgo2.reviewSearchHelper.util.Util;
@@ -80,12 +81,30 @@ public class AmazonClient {
 
     }
 
-    public Map<String, String> getLargeResponseGroupRequest(String keyword){
+    public Map<String, String> createStandardLookupRequest(String ASIN){
+
+        Map<String, String> params = createParameterMap(ITEMLOOKUP_OPERATION_VALUE);
+        params.put(RESPONSEGROUP_PARAMETER, MEDIUM_RESPONSEGROUP_PARAMETER);
+        params.put(ITEMID_PARAMETER, ASIN);
+        return params;
+
+    }
+
+    public Map<String, String> createEditorialLookupRequest(String ASIN){
+
+        Map<String, String> params = createParameterMap(ITEMLOOKUP_OPERATION_VALUE);
+        params.put(RESPONSEGROUP_PARAMETER, EDITORIALREVIEW_RESPONSEGROUP_PARAMETER);
+        params.put(ITEMID_PARAMETER, ASIN);
+        return params;
+
+    }
+
+    public ItemSearchResponse sendLargeResponseGroupRequest(String keyword, String endpoint)throws Exception{
 
         Map<String, String> params = createStandardSearchRequest(keyword);
         params.put(RESPONSEGROUP_PARAMETER, LARGE_RESPONSEGROUP_PARAMETER);
 
-        return params;
+        return sendSearchRequest(params, endpoint);
     }
 
     /**
@@ -98,15 +117,20 @@ public class AmazonClient {
      * @param browseNodeId the id of a specific browseNode (bin)
      * @return Hashmap with the common mandatory parameters, the standard search parameters and the binSearch parameters (key = parameter name; value = parameter value)
      */
-    public Map<String, String> getBinSearchRequest(String keyword, String browseNodeId){
+    public Map<String, String> getBinSearchRequest(String keyword, String browseNodeId, String searchPageNumber){
 
         Map<String, String> params = createStandardSearchRequest(keyword);
         params.put(RESPONSEGROUP_PARAMETER, SEARCHBINS_RESPONSEGROUP_PARAMETER);
         if(browseNodeId != null){
             params.put(BROWSENODE_PARAMETER, browseNodeId);
         }
+        if(searchPageNumber != null){
+            params.put(ITEMPAGE_PARAMETER, searchPageNumber);
+        }
         return params;
     }
+
+
 
     /**
      * Sends an ItemSearch request to Amazon.
@@ -126,8 +150,32 @@ public class AmazonClient {
 
     }
 
-    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId) throws Exception{
-        Map<String, String> originalRequest = getBinSearchRequest(keyword, browseNodeId);
+    public ItemLookupResponse sendItemLookupResponse(String ASIN, String endpoint) throws Exception{
+
+        Map<String, String> originalRequest = createStandardLookupRequest(ASIN);
+        String request = util.getRequest(originalRequest, endpoint);
+        System.out.println(request);
+        ClientResponse response = httpClient.sendGetRequest(request);
+        ItemLookupResponse itemLookupResponse = response.getEntity(ItemLookupResponse.class);
+        util.writeOriginalResponseToFile(itemLookupResponse);
+        return itemLookupResponse;
+
+    }
+
+    public ItemLookupResponse sendEditorialLookupResponse(String ASIN, String endpoint) throws Exception{
+
+        Map<String, String> originalRequest = createEditorialLookupRequest(ASIN);
+        String request = util.getRequest(originalRequest, endpoint);
+        System.out.println(request);
+        ClientResponse response = httpClient.sendGetRequest(request);
+        ItemLookupResponse itemLookupResponse = response.getEntity(ItemLookupResponse.class);
+        util.writeOriginalResponseToFile(itemLookupResponse);
+        return itemLookupResponse;
+
+    }
+
+    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId, String itemPageNumber) throws Exception{
+        Map<String, String> originalRequest = getBinSearchRequest(keyword, browseNodeId, itemPageNumber);
         return sendSearchRequest(originalRequest, ENDPOINT_US);
     }
 
@@ -135,7 +183,10 @@ public class AmazonClient {
 
         Util util1 = new Util();
         AmazonClient amazonClient = new AmazonClient(util1);
-        amazonClient.sendSearchRequest(amazonClient.createStandardSearchRequest("Productivity"), ENDPOINT_US);
+
+       // amazonClient.sendBinSearchRequest("Productivity", "4744", "2");
+       amazonClient.sendItemLookupResponse("0743269519", ENDPOINT_US);
+        //amazonClient.sendEditorialLookupResponse("0743269519", ENDPOINT_US);
     }
 
 }

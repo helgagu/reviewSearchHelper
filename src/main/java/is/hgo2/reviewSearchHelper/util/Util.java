@@ -23,9 +23,9 @@ public class Util {
 
     private static final String UTF8_CHARSET = "UTF-8";
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
-    private final CsvFileMaker csvFileMaker = new CsvFileMaker();
     static DateFormat dateStamp = new SimpleDateFormat("yyyyMMddHHmmss");
     private JaxbMessageConverter messageConverter;
+    private String amazonResponseFilename;
 
     private SecretKeySpec secretKeySpec = null;
     private Mac mac = null;
@@ -241,11 +241,34 @@ public class Util {
 
     public void writeOriginalResponseToFile(ItemSearchResponse response) throws Exception{
 
-        String filename =  AMAZON_RESPONSE_FILENAME + dateStamp.format(new Date());
+        String filename =  AMAZON_RESPONSES_ITEMSEARCH_FILENAME + getDateTimeStamp();
+        setAmazonResponseFilename(filename);
         FileWriter responseFile = new FileWriter(filename);
         responseFile.write(messageConverter.getMessage(ItemSearchResponse.class, response));
         responseFile.flush();
         responseFile.close();
+    }
+
+    public void writeOriginalResponseToFile(ItemLookupResponse response) throws Exception{
+
+        String filename =  AMAZON_RESPONSE_ITEMLOOKUP_FILENAME + getDateTimeStamp();
+        setAmazonResponseFilename(filename);
+        FileWriter responseFile = new FileWriter(filename);
+        responseFile.write(messageConverter.getMessage(ItemLookupResponse.class, response));
+        responseFile.flush();
+        responseFile.close();
+    }
+
+    public String getAmazonResponseFilename() {
+        return amazonResponseFilename;
+    }
+
+    public void setAmazonResponseFilename(String amazonResponseFilename) {
+        this.amazonResponseFilename = amazonResponseFilename;
+    }
+
+    public String getDateTimeStamp(){
+        return dateStamp.format(new Date());
     }
 }
 
