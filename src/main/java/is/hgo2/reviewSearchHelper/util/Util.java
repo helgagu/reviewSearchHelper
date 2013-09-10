@@ -10,6 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.sun.jersey.core.util.Base64;
 import is.hgo2.reviewSearchHelper.amazonMessages.*;
+import is.hgo2.reviewSearchHelper.entities.Asin;
+import is.hgo2.reviewSearchHelper.entityManagers.AsinEntityManager;
 
 import static is.hgo2.reviewSearchHelper.util.Constants.*;
 
@@ -248,6 +250,19 @@ public class Util {
         responseFile.flush();
         responseFile.close();
     }
+
+    public List<Asin> putAsin(ItemSearchResponse response){
+        List<Asin> asins = new ArrayList<>();
+        AsinEntityManager em = new AsinEntityManager();
+        for(Items items: response.getItems()){
+            for(Item item: items.getItem()){
+                 asins.add(em.asin(item.getASIN()));
+            }
+        }
+        em.persist(asins);
+        return asins;
+    }
+
 
     public void writeOriginalResponseToFile(ItemLookupResponse response) throws Exception{
 

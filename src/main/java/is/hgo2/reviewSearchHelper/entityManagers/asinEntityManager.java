@@ -8,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.validation.ConstraintViolationException;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,13 +17,13 @@ import javax.validation.ConstraintViolationException;
  * Time: 16:41
  * To change this template use File | Settings | File Templates.
  */
-public class asinEntityManager {
+public class AsinEntityManager {
 
     private  EntityManagerFactory emf;
     private  EntityManager em;
     private  EntityTransaction trx;
 
-    public asinEntityManager(){
+    public AsinEntityManager(){
         this.emf = Persistence.createEntityManagerFactory(Constants.PERSISTANCE_PROVIDER);
         this.em = emf.createEntityManager();
         this.trx = em.getTransaction();
@@ -34,7 +35,7 @@ public class asinEntityManager {
         return asin;
     }
 
-    public void persist(Asin ... asin){
+    public void persist(List<Asin> asin){
 
         try{
             trx.begin();

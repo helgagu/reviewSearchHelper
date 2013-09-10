@@ -2,13 +2,13 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="reviewSearchHelperEntityPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>reviewsearchhelperentity.Browsenodes</class>
-    <class>reviewsearchhelperentity.Notaccessibleitems</class>
-    <class>reviewsearchhelperentity.Books</class>
-    <class>reviewsearchhelperentity.BinsearchResults</class>
-    <class>reviewsearchhelperentity.BrowsenodesAsin</class>
-    <class>reviewsearchhelperentity.Editorialreviews</class>
-    <class>reviewsearchhelperentity.Asin</class>
+    <class>is.hgo2.reviewSearchHelper.entities.Browsenodes</class>
+    <class>is.hgo2.reviewSearchHelper.entities.Notaccessibleitems</class>
+    <class>is.hgo2.reviewSearchHelper.entities.Books</class>
+    <class>is.hgo2.reviewSearchHelper.entities.BinsearchResults</class>
+    <class>is.hgo2.reviewSearchHelper.entities.BrowsenodesAsin</class>
+    <class>is.hgo2.reviewSearchHelper.entities.Editorialreviews</class>
+    <class>is.hgo2.reviewSearchHelper.entities.Asin</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3307/reviewSearchResults?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.password" value="9262helg"/>
