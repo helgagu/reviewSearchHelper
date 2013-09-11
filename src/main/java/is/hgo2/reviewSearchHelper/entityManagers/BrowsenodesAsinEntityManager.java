@@ -1,7 +1,10 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
 import is.hgo2.reviewSearchHelper.entities.Asin;
+import is.hgo2.reviewSearchHelper.entities.Browsenodes;
+import is.hgo2.reviewSearchHelper.entities.BrowsenodesAsin;
 import is.hgo2.reviewSearchHelper.util.Constants;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -11,45 +14,46 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This is a class to work with the asin entity object. Insert into the asin table and fetch data from it.
- * @author Helga Gudrun Oskarsdottir
+ * Class to work with the browsenodesAsin database object, insert and fetch objects
  */
-public class AsinEntityManager {
+public class BrowsenodesAsinEntityManager {
 
-    private  EntityManagerFactory emf;
-    private  EntityManager em;
-    private  EntityTransaction trx;
+    private EntityManagerFactory emf;
+    private EntityManager em;
+    private EntityTransaction trx;
 
     /**
      * Constructor that initializes the entityManagerFactory, entityManager and EntityTransaction
      */
-    public AsinEntityManager(){
+    public BrowsenodesAsinEntityManager(){
         this.emf = Persistence.createEntityManagerFactory(Constants.PERSISTANCE_PROVIDER);
         this.em = emf.createEntityManager();
         this.trx = em.getTransaction();
     }
 
     /**
-     * Creates the asin insert object
+     * Creates the  insert object
      * @param asinNumber the amazon standard item number
      * @return asin object with asin value and timestamp
      */
-    public Asin asin(String asinNumber){
-        Asin asin = new Asin();
-        asin.setAsin(asinNumber);
-        asin.setTimestamp(new Date());
-        return asin;
+    public BrowsenodesAsin asin(String asinNumber, Asin asin, Browsenodes browsenodes){
+        BrowsenodesAsin browsenodesAsin = new BrowsenodesAsin();
+        browsenodesAsin.setAsin(asinNumber);
+        browsenodesAsin.setTimestamp(new Date());
+        browsenodesAsin.setIdasin(asin);
+        browsenodesAsin.setIdbrowsenodes(browsenodes);
+        return browsenodesAsin;
     }
 
     /**
-     * Persist a list of asin objects to database
-     * @param asin list of asin objects to persist
+     * Persist a list of browsenodesAsin objects to database
+     * @param browsenodesAsins list of browsenodesAsins objects to persist
      */
-    public void persist(List<Asin> asin){
+    public void persist(List<BrowsenodesAsin> browsenodesAsins){
 
         try{
             trx.begin();
-            for(Asin row: asin){
+            for(BrowsenodesAsin row: browsenodesAsins){
                 em.persist(row);
             }
             trx.commit();
@@ -62,16 +66,6 @@ public class AsinEntityManager {
             throw c;
         }
 
-    }
-
-    /**
-     * Get asin object from database by the field ASIN
-     * @param asinNumber amazon standard item number
-     * @return asin object for the asinNumber
-     */
-    public Asin getAsin(String asinNumber){
-        Asin asin = (Asin) em.createNamedQuery("Asin.findByAsin").setParameter("asin", asinNumber).getSingleResult();
-        return asin;
     }
 
 }

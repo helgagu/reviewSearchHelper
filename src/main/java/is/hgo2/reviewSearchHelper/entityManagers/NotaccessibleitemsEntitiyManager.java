@@ -1,7 +1,9 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
 import is.hgo2.reviewSearchHelper.entities.Asin;
+import is.hgo2.reviewSearchHelper.entities.Notaccessibleitems;
 import is.hgo2.reviewSearchHelper.util.Constants;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -11,19 +13,18 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This is a class to work with the asin entity object. Insert into the asin table and fetch data from it.
- * @author Helga Gudrun Oskarsdottir
+ * Class to work with the notaccessibleitems table, insert and fetch data
  */
-public class AsinEntityManager {
+public class NotaccessibleitemsEntitiyManager {
 
-    private  EntityManagerFactory emf;
-    private  EntityManager em;
-    private  EntityTransaction trx;
+    private EntityManagerFactory emf;
+    private EntityManager em;
+    private EntityTransaction trx;
 
     /**
      * Constructor that initializes the entityManagerFactory, entityManager and EntityTransaction
      */
-    public AsinEntityManager(){
+    public NotaccessibleitemsEntitiyManager(){
         this.emf = Persistence.createEntityManagerFactory(Constants.PERSISTANCE_PROVIDER);
         this.em = emf.createEntityManager();
         this.trx = em.getTransaction();
@@ -31,25 +32,25 @@ public class AsinEntityManager {
 
     /**
      * Creates the asin insert object
-     * @param asinNumber the amazon standard item number
-     * @return asin object with asin value and timestamp
+     * @param asin the asin object
+     * @return notaccessibleitems object with asin value and timestamp
      */
-    public Asin asin(String asinNumber){
-        Asin asin = new Asin();
-        asin.setAsin(asinNumber);
-        asin.setTimestamp(new Date());
-        return asin;
+    public Notaccessibleitems notaccessibleitems(Asin asin){
+        Notaccessibleitems notaccessibleitems = new Notaccessibleitems();
+        notaccessibleitems.setTimestamp(new Date());
+        notaccessibleitems.setAsinIdasin(asin);
+        return notaccessibleitems;
     }
 
     /**
-     * Persist a list of asin objects to database
-     * @param asin list of asin objects to persist
+     * Persist a list of notaccessibleitems objects to database
+     * @param notaccessibleitemses list of notaccessibleitems objects to persist
      */
-    public void persist(List<Asin> asin){
+    public void persist(List<Notaccessibleitems> notaccessibleitemses){
 
         try{
             trx.begin();
-            for(Asin row: asin){
+            for(Notaccessibleitems row: notaccessibleitemses){
                 em.persist(row);
             }
             trx.commit();
@@ -62,16 +63,6 @@ public class AsinEntityManager {
             throw c;
         }
 
-    }
-
-    /**
-     * Get asin object from database by the field ASIN
-     * @param asinNumber amazon standard item number
-     * @return asin object for the asinNumber
-     */
-    public Asin getAsin(String asinNumber){
-        Asin asin = (Asin) em.createNamedQuery("Asin.findByAsin").setParameter("asin", asinNumber).getSingleResult();
-        return asin;
     }
 
 }

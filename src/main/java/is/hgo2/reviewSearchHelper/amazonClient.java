@@ -3,6 +3,7 @@ package is.hgo2.reviewSearchHelper;
 import com.sun.jersey.api.client.ClientResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemLookupResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
+import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.entityManagers.AsinEntityManager;
 import is.hgo2.reviewSearchHelper.util.HttpClient;
 import is.hgo2.reviewSearchHelper.util.Util;
@@ -147,7 +148,7 @@ public class AmazonClient {
         ClientResponse response = httpClient.sendGetRequest(request);
         ItemSearchResponse itemSearchResponse = response.getEntity(ItemSearchResponse.class);
         util.writeOriginalResponseToFile(itemSearchResponse);
-        util.putAsin(itemSearchResponse);
+
         return itemSearchResponse;
 
     }
@@ -188,6 +189,9 @@ public class AmazonClient {
         AmazonClient amazonClient = new AmazonClient(util1);
 
        amazonClient.sendBinSearchRequest("Productivity", "4744", "2");
+
+        AsinEntityManager asin = new AsinEntityManager();
+        System.out.println(asin.getAsin("1878424505"));
        //amazonClient.sendItemLookupResponse("0743269519", ENDPOINT_US);
         //amazonClient.sendEditorialLookupResponse("0743269519", ENDPOINT_US);
     }
