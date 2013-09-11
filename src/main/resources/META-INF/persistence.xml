@@ -3,7 +3,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 <persistence-unit name="reviewSearchHelperEntityPU" transaction-type="RESOURCE_LOCAL">
-    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <class>is.hgo2.reviewSearchHelper.entities.Browsenodes</class>
     <class>is.hgo2.reviewSearchHelper.entities.Notaccessibleitems</class>
     <class>is.hgo2.reviewSearchHelper.entities.Books</class>

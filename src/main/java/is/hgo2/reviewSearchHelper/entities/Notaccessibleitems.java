@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,14 +28,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Notaccessibleitems.findAll", query = "SELECT n FROM Notaccessibleitems n"),
-    @NamedQuery(name = "Notaccessibleitems.findByIdnotAccessibleItems", query = "SELECT n FROM Notaccessibleitems n WHERE n.notaccessibleitemsPK.idnotAccessibleItems = :idnotAccessibleItems"),
-    @NamedQuery(name = "Notaccessibleitems.findByAsinIdasin", query = "SELECT n FROM Notaccessibleitems n WHERE n.notaccessibleitemsPK.asinIdasin = :asinIdasin"),
+    @NamedQuery(name = "Notaccessibleitems.findByIdnotAccessibleItems", query = "SELECT n FROM Notaccessibleitems n WHERE n.idnotAccessibleItems = :idnotAccessibleItems"),
     @NamedQuery(name = "Notaccessibleitems.findByTimestamp", query = "SELECT n FROM Notaccessibleitems n WHERE n.timestamp = :timestamp"),
     @NamedQuery(name = "Notaccessibleitems.findByUpdatedTimestamp", query = "SELECT n FROM Notaccessibleitems n WHERE n.updatedTimestamp = :updatedTimestamp")})
 public class Notaccessibleitems implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected NotaccessibleitemsPK notaccessibleitemsPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "idnotAccessibleItems")
+    private Integer idnotAccessibleItems;
     @Basic(optional = false)
     @Column(name = "Timestamp")
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,32 +44,28 @@ public class Notaccessibleitems implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @JoinColumn(name = "asin_idasin", referencedColumnName = "idasin", insertable = false, updatable = false)
+    @JoinColumn(name = "asin_idasin", referencedColumnName = "idasin")
     @ManyToOne(optional = false)
-    private Asin asin;
+    private Asin asinIdasin;
 
     public Notaccessibleitems() {
     }
 
-    public Notaccessibleitems(NotaccessibleitemsPK notaccessibleitemsPK) {
-        this.notaccessibleitemsPK = notaccessibleitemsPK;
+    public Notaccessibleitems(Integer idnotAccessibleItems) {
+        this.idnotAccessibleItems = idnotAccessibleItems;
     }
 
-    public Notaccessibleitems(NotaccessibleitemsPK notaccessibleitemsPK, Date timestamp) {
-        this.notaccessibleitemsPK = notaccessibleitemsPK;
+    public Notaccessibleitems(Integer idnotAccessibleItems, Date timestamp) {
+        this.idnotAccessibleItems = idnotAccessibleItems;
         this.timestamp = timestamp;
     }
 
-    public Notaccessibleitems(int idnotAccessibleItems, int asinIdasin) {
-        this.notaccessibleitemsPK = new NotaccessibleitemsPK(idnotAccessibleItems, asinIdasin);
+    public Integer getIdnotAccessibleItems() {
+        return idnotAccessibleItems;
     }
 
-    public NotaccessibleitemsPK getNotaccessibleitemsPK() {
-        return notaccessibleitemsPK;
-    }
-
-    public void setNotaccessibleitemsPK(NotaccessibleitemsPK notaccessibleitemsPK) {
-        this.notaccessibleitemsPK = notaccessibleitemsPK;
+    public void setIdnotAccessibleItems(Integer idnotAccessibleItems) {
+        this.idnotAccessibleItems = idnotAccessibleItems;
     }
 
     public Date getTimestamp() {
@@ -87,18 +84,18 @@ public class Notaccessibleitems implements Serializable {
         this.updatedTimestamp = updatedTimestamp;
     }
 
-    public Asin getAsin() {
-        return asin;
+    public Asin getAsinIdasin() {
+        return asinIdasin;
     }
 
-    public void setAsin(Asin asin) {
-        this.asin = asin;
+    public void setAsinIdasin(Asin asinIdasin) {
+        this.asinIdasin = asinIdasin;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (notaccessibleitemsPK != null ? notaccessibleitemsPK.hashCode() : 0);
+        hash += (idnotAccessibleItems != null ? idnotAccessibleItems.hashCode() : 0);
         return hash;
     }
 
@@ -109,7 +106,7 @@ public class Notaccessibleitems implements Serializable {
             return false;
         }
         Notaccessibleitems other = (Notaccessibleitems) object;
-        if ((this.notaccessibleitemsPK == null && other.notaccessibleitemsPK != null) || (this.notaccessibleitemsPK != null && !this.notaccessibleitemsPK.equals(other.notaccessibleitemsPK))) {
+        if ((this.idnotAccessibleItems == null && other.idnotAccessibleItems != null) || (this.idnotAccessibleItems != null && !this.idnotAccessibleItems.equals(other.idnotAccessibleItems))) {
             return false;
         }
         return true;
@@ -117,7 +114,7 @@ public class Notaccessibleitems implements Serializable {
 
     @Override
     public String toString() {
-        return "reviewsearchhelperentity.Notaccessibleitems[ notaccessibleitemsPK=" + notaccessibleitemsPK + " ]";
+        return "bla.Notaccessibleitems[ idnotAccessibleItems=" + idnotAccessibleItems + " ]";
     }
     
 }

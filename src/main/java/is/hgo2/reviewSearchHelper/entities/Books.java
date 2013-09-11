@@ -11,8 +11,10 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -34,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Books.findAll", query = "SELECT b FROM Books b"),
-    @NamedQuery(name = "Books.findByIdbooks", query = "SELECT b FROM Books b WHERE b.booksPK.idbooks = :idbooks"),
+    @NamedQuery(name = "Books.findByIdbooks", query = "SELECT b FROM Books b WHERE b.idbooks = :idbooks"),
     @NamedQuery(name = "Books.findByIsbn", query = "SELECT b FROM Books b WHERE b.isbn = :isbn"),
     @NamedQuery(name = "Books.findByTitle", query = "SELECT b FROM Books b WHERE b.title = :title"),
     @NamedQuery(name = "Books.findByAuthors", query = "SELECT b FROM Books b WHERE b.authors = :authors"),
@@ -48,12 +50,14 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Books.findByEisbn", query = "SELECT b FROM Books b WHERE b.eisbn = :eisbn"),
     @NamedQuery(name = "Books.findByBinding", query = "SELECT b FROM Books b WHERE b.binding = :binding"),
     @NamedQuery(name = "Books.findByTimestamp", query = "SELECT b FROM Books b WHERE b.timestamp = :timestamp"),
-    @NamedQuery(name = "Books.findByUpdatedTimestamp", query = "SELECT b FROM Books b WHERE b.updatedTimestamp = :updatedTimestamp"),
-    @NamedQuery(name = "Books.findByIdasin", query = "SELECT b FROM Books b WHERE b.booksPK.idasin = :idasin")})
+    @NamedQuery(name = "Books.findByUpdatedTimestamp", query = "SELECT b FROM Books b WHERE b.updatedTimestamp = :updatedTimestamp")})
 public class Books implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected BooksPK booksPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "idbooks")
+    private Integer idbooks;
     @Basic(optional = false)
     @Column(name = "isbn")
     private String isbn;
@@ -92,21 +96,21 @@ public class Books implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @JoinColumn(name = "idasin", referencedColumnName = "idasin", insertable = false, updatable = false)
+    @JoinColumn(name = "idasin", referencedColumnName = "idasin")
     @ManyToOne(optional = false)
-    private Asin asin;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "books")
+    private Asin idasin;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idbooks")
     private Collection<Editorialreviews> editorialreviewsCollection;
 
     public Books() {
     }
 
-    public Books(BooksPK booksPK) {
-        this.booksPK = booksPK;
+    public Books(Integer idbooks) {
+        this.idbooks = idbooks;
     }
 
-    public Books(BooksPK booksPK, String isbn, String title, String authors, byte[] originalRequest, Date timestamp) {
-        this.booksPK = booksPK;
+    public Books(Integer idbooks, String isbn, String title, String authors, byte[] originalRequest, Date timestamp) {
+        this.idbooks = idbooks;
         this.isbn = isbn;
         this.title = title;
         this.authors = authors;
@@ -114,16 +118,12 @@ public class Books implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public Books(int idbooks, int idasin) {
-        this.booksPK = new BooksPK(idbooks, idasin);
+    public Integer getIdbooks() {
+        return idbooks;
     }
 
-    public BooksPK getBooksPK() {
-        return booksPK;
-    }
-
-    public void setBooksPK(BooksPK booksPK) {
-        this.booksPK = booksPK;
+    public void setIdbooks(Integer idbooks) {
+        this.idbooks = idbooks;
     }
 
     public String getIsbn() {
@@ -246,12 +246,12 @@ public class Books implements Serializable {
         this.updatedTimestamp = updatedTimestamp;
     }
 
-    public Asin getAsin() {
-        return asin;
+    public Asin getIdasin() {
+        return idasin;
     }
 
-    public void setAsin(Asin asin) {
-        this.asin = asin;
+    public void setIdasin(Asin idasin) {
+        this.idasin = idasin;
     }
 
     @XmlTransient
@@ -266,7 +266,7 @@ public class Books implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (booksPK != null ? booksPK.hashCode() : 0);
+        hash += (idbooks != null ? idbooks.hashCode() : 0);
         return hash;
     }
 
@@ -277,7 +277,7 @@ public class Books implements Serializable {
             return false;
         }
         Books other = (Books) object;
-        if ((this.booksPK == null && other.booksPK != null) || (this.booksPK != null && !this.booksPK.equals(other.booksPK))) {
+        if ((this.idbooks == null && other.idbooks != null) || (this.idbooks != null && !this.idbooks.equals(other.idbooks))) {
             return false;
         }
         return true;
@@ -285,7 +285,7 @@ public class Books implements Serializable {
 
     @Override
     public String toString() {
-        return "reviewsearchhelperentity.Books[ booksPK=" + booksPK + " ]";
+        return "bla.Books[ idbooks=" + idbooks + " ]";
     }
     
 }

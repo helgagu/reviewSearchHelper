@@ -8,8 +8,10 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -29,15 +31,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Editorialreviews.findAll", query = "SELECT e FROM Editorialreviews e"),
-    @NamedQuery(name = "Editorialreviews.findByIdeditorialReviews", query = "SELECT e FROM Editorialreviews e WHERE e.editorialreviewsPK.ideditorialReviews = :ideditorialReviews"),
+    @NamedQuery(name = "Editorialreviews.findByIdeditorialReviews", query = "SELECT e FROM Editorialreviews e WHERE e.ideditorialReviews = :ideditorialReviews"),
     @NamedQuery(name = "Editorialreviews.findBySource", query = "SELECT e FROM Editorialreviews e WHERE e.source = :source"),
     @NamedQuery(name = "Editorialreviews.findByTimestamp", query = "SELECT e FROM Editorialreviews e WHERE e.timestamp = :timestamp"),
-    @NamedQuery(name = "Editorialreviews.findByUpdatedTimestamp", query = "SELECT e FROM Editorialreviews e WHERE e.updatedTimestamp = :updatedTimestamp"),
-    @NamedQuery(name = "Editorialreviews.findByIdbooks", query = "SELECT e FROM Editorialreviews e WHERE e.editorialreviewsPK.idbooks = :idbooks")})
+    @NamedQuery(name = "Editorialreviews.findByUpdatedTimestamp", query = "SELECT e FROM Editorialreviews e WHERE e.updatedTimestamp = :updatedTimestamp")})
 public class Editorialreviews implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected EditorialreviewsPK editorialreviewsPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "ideditorialReviews")
+    private Integer ideditorialReviews;
     @Lob
     @Column(name = "editorialReview")
     private byte[] editorialReview;
@@ -54,33 +58,29 @@ public class Editorialreviews implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @JoinColumn(name = "idbooks", referencedColumnName = "idbooks", insertable = false, updatable = false)
+    @JoinColumn(name = "idbooks", referencedColumnName = "idbooks")
     @ManyToOne(optional = false)
-    private Books books;
+    private Books idbooks;
 
     public Editorialreviews() {
     }
 
-    public Editorialreviews(EditorialreviewsPK editorialreviewsPK) {
-        this.editorialreviewsPK = editorialreviewsPK;
+    public Editorialreviews(Integer ideditorialReviews) {
+        this.ideditorialReviews = ideditorialReviews;
     }
 
-    public Editorialreviews(EditorialreviewsPK editorialreviewsPK, byte[] originalRequest, Date timestamp) {
-        this.editorialreviewsPK = editorialreviewsPK;
+    public Editorialreviews(Integer ideditorialReviews, byte[] originalRequest, Date timestamp) {
+        this.ideditorialReviews = ideditorialReviews;
         this.originalRequest = originalRequest;
         this.timestamp = timestamp;
     }
 
-    public Editorialreviews(int ideditorialReviews, int idbooks) {
-        this.editorialreviewsPK = new EditorialreviewsPK(ideditorialReviews, idbooks);
+    public Integer getIdeditorialReviews() {
+        return ideditorialReviews;
     }
 
-    public EditorialreviewsPK getEditorialreviewsPK() {
-        return editorialreviewsPK;
-    }
-
-    public void setEditorialreviewsPK(EditorialreviewsPK editorialreviewsPK) {
-        this.editorialreviewsPK = editorialreviewsPK;
+    public void setIdeditorialReviews(Integer ideditorialReviews) {
+        this.ideditorialReviews = ideditorialReviews;
     }
 
     public byte[] getEditorialReview() {
@@ -123,18 +123,18 @@ public class Editorialreviews implements Serializable {
         this.updatedTimestamp = updatedTimestamp;
     }
 
-    public Books getBooks() {
-        return books;
+    public Books getIdbooks() {
+        return idbooks;
     }
 
-    public void setBooks(Books books) {
-        this.books = books;
+    public void setIdbooks(Books idbooks) {
+        this.idbooks = idbooks;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (editorialreviewsPK != null ? editorialreviewsPK.hashCode() : 0);
+        hash += (ideditorialReviews != null ? ideditorialReviews.hashCode() : 0);
         return hash;
     }
 
@@ -145,7 +145,7 @@ public class Editorialreviews implements Serializable {
             return false;
         }
         Editorialreviews other = (Editorialreviews) object;
-        if ((this.editorialreviewsPK == null && other.editorialreviewsPK != null) || (this.editorialreviewsPK != null && !this.editorialreviewsPK.equals(other.editorialreviewsPK))) {
+        if ((this.ideditorialReviews == null && other.ideditorialReviews != null) || (this.ideditorialReviews != null && !this.ideditorialReviews.equals(other.ideditorialReviews))) {
             return false;
         }
         return true;
@@ -153,7 +153,7 @@ public class Editorialreviews implements Serializable {
 
     @Override
     public String toString() {
-        return "reviewsearchhelperentity.Editorialreviews[ editorialreviewsPK=" + editorialreviewsPK + " ]";
+        return "bla.Editorialreviews[ ideditorialReviews=" + ideditorialReviews + " ]";
     }
     
 }

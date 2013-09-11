@@ -94,7 +94,7 @@ public class BinsearchResults implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "binsearchResults")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idbinsearchResults")
     private Collection<Browsenodes> browsenodesCollection;
 
     public BinsearchResults() {
@@ -273,7 +273,7 @@ public class BinsearchResults implements Serializable {
 
     @Override
     public String toString() {
-        return "reviewsearchhelperentity.BinsearchResults[ idbinsearchResults=" + idbinsearchResults + " ]";
+        return "bla.BinsearchResults[ idbinsearchResults=" + idbinsearchResults + " ]";
     }
     
 }

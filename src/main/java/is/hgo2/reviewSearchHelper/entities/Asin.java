@@ -53,11 +53,11 @@ public class Asin implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "asin")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idasin")
     private Collection<Books> booksCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "asin1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idasin")
     private Collection<BrowsenodesAsin> browsenodesAsinCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "asin")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "asinIdasin")
     private Collection<Notaccessibleitems> notaccessibleitemsCollection;
 
     public Asin() {
@@ -154,7 +154,7 @@ public class Asin implements Serializable {
 
     @Override
     public String toString() {
-        return "reviewsearchhelperentity.Asin[ idasin=" + idasin + " ]";
+        return "bla.Asin[ idasin=" + idasin + " ]";
     }
     
 }

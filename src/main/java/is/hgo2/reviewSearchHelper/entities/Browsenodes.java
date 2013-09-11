@@ -10,8 +10,10 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -32,17 +34,19 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Browsenodes.findAll", query = "SELECT b FROM Browsenodes b"),
-    @NamedQuery(name = "Browsenodes.findByIdbrowsenodes", query = "SELECT b FROM Browsenodes b WHERE b.browsenodesPK.idbrowsenodes = :idbrowsenodes"),
+    @NamedQuery(name = "Browsenodes.findByIdbrowsenodes", query = "SELECT b FROM Browsenodes b WHERE b.idbrowsenodes = :idbrowsenodes"),
     @NamedQuery(name = "Browsenodes.findByBinName", query = "SELECT b FROM Browsenodes b WHERE b.binName = :binName"),
     @NamedQuery(name = "Browsenodes.findByBinItemCount", query = "SELECT b FROM Browsenodes b WHERE b.binItemCount = :binItemCount"),
     @NamedQuery(name = "Browsenodes.findByBrowseNodeId", query = "SELECT b FROM Browsenodes b WHERE b.browseNodeId = :browseNodeId"),
     @NamedQuery(name = "Browsenodes.findByTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.timestamp = :timestamp"),
-    @NamedQuery(name = "Browsenodes.findByUpdatedTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.updatedTimestamp = :updatedTimestamp"),
-    @NamedQuery(name = "Browsenodes.findByIdbinsearchResults", query = "SELECT b FROM Browsenodes b WHERE b.browsenodesPK.idbinsearchResults = :idbinsearchResults")})
+    @NamedQuery(name = "Browsenodes.findByUpdatedTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.updatedTimestamp = :updatedTimestamp")})
 public class Browsenodes implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected BrowsenodesPK browsenodesPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "idbrowsenodes")
+    private Integer idbrowsenodes;
     @Basic(optional = false)
     @Column(name = "binName")
     private String binName;
@@ -59,37 +63,33 @@ public class Browsenodes implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "browsenodes")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idbrowsenodes")
     private Collection<BrowsenodesAsin> browsenodesAsinCollection;
-    @JoinColumn(name = "idbinsearch_results", referencedColumnName = "idbinsearch_results", insertable = false, updatable = false)
+    @JoinColumn(name = "idbinsearch_results", referencedColumnName = "idbinsearch_results")
     @ManyToOne(optional = false)
-    private BinsearchResults binsearchResults;
+    private BinsearchResults idbinsearchResults;
 
     public Browsenodes() {
     }
 
-    public Browsenodes(BrowsenodesPK browsenodesPK) {
-        this.browsenodesPK = browsenodesPK;
+    public Browsenodes(Integer idbrowsenodes) {
+        this.idbrowsenodes = idbrowsenodes;
     }
 
-    public Browsenodes(BrowsenodesPK browsenodesPK, String binName, long binItemCount, String browseNodeId, Date timestamp) {
-        this.browsenodesPK = browsenodesPK;
+    public Browsenodes(Integer idbrowsenodes, String binName, long binItemCount, String browseNodeId, Date timestamp) {
+        this.idbrowsenodes = idbrowsenodes;
         this.binName = binName;
         this.binItemCount = binItemCount;
         this.browseNodeId = browseNodeId;
         this.timestamp = timestamp;
     }
 
-    public Browsenodes(int idbrowsenodes, int idbinsearchResults) {
-        this.browsenodesPK = new BrowsenodesPK(idbrowsenodes, idbinsearchResults);
+    public Integer getIdbrowsenodes() {
+        return idbrowsenodes;
     }
 
-    public BrowsenodesPK getBrowsenodesPK() {
-        return browsenodesPK;
-    }
-
-    public void setBrowsenodesPK(BrowsenodesPK browsenodesPK) {
-        this.browsenodesPK = browsenodesPK;
+    public void setIdbrowsenodes(Integer idbrowsenodes) {
+        this.idbrowsenodes = idbrowsenodes;
     }
 
     public String getBinName() {
@@ -141,18 +141,18 @@ public class Browsenodes implements Serializable {
         this.browsenodesAsinCollection = browsenodesAsinCollection;
     }
 
-    public BinsearchResults getBinsearchResults() {
-        return binsearchResults;
+    public BinsearchResults getIdbinsearchResults() {
+        return idbinsearchResults;
     }
 
-    public void setBinsearchResults(BinsearchResults binsearchResults) {
-        this.binsearchResults = binsearchResults;
+    public void setIdbinsearchResults(BinsearchResults idbinsearchResults) {
+        this.idbinsearchResults = idbinsearchResults;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (browsenodesPK != null ? browsenodesPK.hashCode() : 0);
+        hash += (idbrowsenodes != null ? idbrowsenodes.hashCode() : 0);
         return hash;
     }
 
@@ -163,7 +163,7 @@ public class Browsenodes implements Serializable {
             return false;
         }
         Browsenodes other = (Browsenodes) object;
-        if ((this.browsenodesPK == null && other.browsenodesPK != null) || (this.browsenodesPK != null && !this.browsenodesPK.equals(other.browsenodesPK))) {
+        if ((this.idbrowsenodes == null && other.idbrowsenodes != null) || (this.idbrowsenodes != null && !this.idbrowsenodes.equals(other.idbrowsenodes))) {
             return false;
         }
         return true;
@@ -171,7 +171,7 @@ public class Browsenodes implements Serializable {
 
     @Override
     public String toString() {
-        return "reviewsearchhelperentity.Browsenodes[ browsenodesPK=" + browsenodesPK + " ]";
+        return "bla.Browsenodes[ idbrowsenodes=" + idbrowsenodes + " ]";
     }
     
 }
