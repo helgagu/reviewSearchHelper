@@ -1,12 +1,12 @@
 package is.hgo2.reviewSearchHelper;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import is.hgo2.reviewSearchHelper.amazonMessages.Bin;
-import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
-import is.hgo2.reviewSearchHelper.amazonMessages.Items;
-import is.hgo2.reviewSearchHelper.amazonMessages.SearchBinSet;
+import is.hgo2.reviewSearchHelper.amazonMessages.*;
+import is.hgo2.reviewSearchHelper.entities.BinsearchResults;
+import is.hgo2.reviewSearchHelper.entityManagers.BinsearchResultsEntityManager;
 import is.hgo2.reviewSearchHelper.util.Constants;
 import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
+import is.hgo2.reviewSearchHelper.util.JaxbMessageConverter;
 import is.hgo2.reviewSearchHelper.util.Util;
 
 import java.math.BigInteger;
@@ -19,7 +19,10 @@ public class BinSearch {
     private final Util util;
     private final AmazonClient amazonClient;
 
-
+    /**
+     * Constructor which initiates util and amazonClient
+     * @throws Exception
+     */
     public BinSearch() throws Exception{
         this.util = new Util();
         this.amazonClient = new AmazonClient(util);
@@ -58,16 +61,14 @@ public class BinSearch {
      * The exclusion criteria were analyzed manually.
      *
      * @param response             the response object of the ItemSearch with responseGroup = BinSearch
-     * @param useExclusionCriteria true=use the exclusion criteria specified in method ExclusionCriteria.excludeBrowseNodeId(bin name), false=no exclusion criteria
      * @return List of browseNodeIds
      */
-    public List<String> getBrowseNodeIds(ItemSearchResponse response, Boolean useExclusionCriteria) {
+    public List<String> getBrowseNodeIds(ItemSearchResponse response) {
 
         List<String> browseNodeIds = new ArrayList();
         for (Items items : response.getItems()) {
             for (SearchBinSet bin : items.getSearchBinSets().getSearchBinSet()) {
                 for (Bin binDetails : bin.getBin()) {
-                    if (useExclusionCriteria) {
                         if (!ExclusionCriteria.excludeBrowseNodeId(binDetails.getBinName())) {
                             if (resultsMoreThanHundred(binDetails.getBinItemCount())) {
                                 for (Bin.BinParameter param : binDetails.getBinParameter()) {
@@ -75,14 +76,6 @@ public class BinSearch {
                                 }
                             }
                         }
-                    } else {
-                        if (resultsMoreThanHundred(binDetails.getBinItemCount())) {
-                            for (Bin.BinParameter param : binDetails.getBinParameter()) {
-                                browseNodeIds.add(param.getValue());
-                            }
-                        }
-                    }
-
                 }
             }
         }
@@ -104,8 +97,6 @@ public class BinSearch {
         return Boolean.FALSE;
     }
 
-
-
     /**
      * This fetches a bin list for a standard search request for a specific keyword using the binSearch request.
      * For each bin in the bin list the browseNodeIds are extracted (the subject categories e.g. Business & Investing, Computers & Technology)  <p><p>
@@ -119,21 +110,78 @@ public class BinSearch {
      * @param keyword the search keyword, this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
      * @throws Exception
      */
-    public void getAllBrowseNodes(String keyword) throws Exception{
+    public void getAllBrowseNodes(String keyword, String endpoint) throws Exception{
 
-        ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, null, null);
-        String filename = Constants.BINLIST_FILENAME + Constants.CSV_FILEEND;
+        ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, null, null, endpoint);
+        setBinSearchResults(response, keyword, endpoint);
 
+    }
+
+
+    /**
+     * Set the values in a binsearch object
+     * @param response the amazon itemSearchResponse
+     * @param keyword the serach keyword
+     * @param endpoint the amazon locale, the ending of the url http://amazon. , e.g. com, co.uk etc...
+     * @throws Exception
+     */
+    public void setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint) throws Exception{
+
+        BinsearchResultsEntityManager bin = new BinsearchResultsEntityManager();
+        String availability = "";
+        String merchantId = "";
+        String sort = "";
+        String searchIndex = "";
+        String responseGroup = "";
+        String browseNodeId = "";
+        String powerSearch = "";
+        String timestamp = "";
+        Long totalResults = null;
+        Long totalPages = null;
+        for(Arguments.Argument arg: response.getOperationRequest().getArguments().getArgument()){
+            //TODO: debug and see why not working
+            if(arg.getName() == Constants.AVAILABILITY_PARAMETER){
+                availability = arg.getValue();
+            }
+            if(arg.getName() == Constants.MERCHANTID_PARAMETER){
+                merchantId = arg.getValue();
+            }
+            if(arg.getName() == Constants.SORT_PARAMETER){
+                sort = arg.getValue();
+            }
+            if(arg.getName() == Constants.SEARCHINDEX_PARAMETER){
+                searchIndex = arg.getValue();
+            }
+            if(arg.getName() == Constants.RESPONSEGROUP_PARAMETER){
+                responseGroup = arg.getValue();
+            }
+            if(arg.getName() == Constants.BROWSENODE_PARAMETER){
+                browseNodeId = arg.getValue();
+            }
+            if(arg.getName() == Constants.POWER_PARAMETER){
+                powerSearch = arg.getValue();
+            }
+            if(arg.getName() == Constants.TIMESTAMP_PARAMETER){
+               timestamp = arg.getValue();
+            }
+        }
+        for(Items item: response.getItems()){
+            totalPages = item.getTotalPages().longValue();
+            totalResults = item.getTotalResults().longValue();
+        }
+        BinsearchResults binsearchresults = bin.binsearchResults(endpoint, keyword, util.unmarshalResponse(response), availability,
+                browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, totalResults, totalPages, timestamp);
+        bin.persist(binsearchresults);
     }
 
     public static void main(String [] args) throws Exception{
 
         BinSearch binSearch = new BinSearch();
-        binSearch.getAllBrowseNodes("Productivity");
-        binSearch.getAllBrowseNodes("Personal Productivity");
-        binSearch.getAllBrowseNodes("Knowledge Worker Productivity");
-        binSearch.getAllBrowseNodes("Efficient");
-        binSearch.getAllBrowseNodes("Effective*");
+        binSearch.getAllBrowseNodes("Productivity", Constants.ENDPOINT_US);
+        binSearch.getAllBrowseNodes("Personal Productivity", Constants.ENDPOINT_US);
+        binSearch.getAllBrowseNodes("Knowledge Worker Productivity", Constants.ENDPOINT_US);
+        binSearch.getAllBrowseNodes("Efficient", Constants.ENDPOINT_US);
+        binSearch.getAllBrowseNodes("Effective*", Constants.ENDPOINT_US);
 
     }
 }

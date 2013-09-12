@@ -83,6 +83,12 @@ public class AmazonClient {
 
     }
 
+    /**
+     * Creates the standard lookup request by asin. The asin's are fetched from the search requests.
+     *
+     * @param ASIN amazon standard item number
+     * @return Hashmap with the common mandatory parameters and the standard search request parameters (key = parameter name; value = parameter value)
+     */
     public Map<String, String> createStandardLookupRequest(String ASIN){
 
         Map<String, String> params = createParameterMap(ITEMLOOKUP_OPERATION_VALUE);
@@ -92,6 +98,11 @@ public class AmazonClient {
 
     }
 
+    /**
+     * Creates the standard editorial lookup request by asin. The asin's are fetched from the search requests.
+     * @param ASIN amazon standard item number
+     * @return Hashmap with the common mandatory parameters and the standard search request parameters (key = parameter name; value = parameter value)
+     */
     public Map<String, String> createEditorialLookupRequest(String ASIN){
 
         Map<String, String> params = createParameterMap(ITEMLOOKUP_OPERATION_VALUE);
@@ -99,14 +110,6 @@ public class AmazonClient {
         params.put(ITEMID_PARAMETER, ASIN);
         return params;
 
-    }
-
-    public ItemSearchResponse sendLargeResponseGroupRequest(String keyword, String endpoint)throws Exception{
-
-        Map<String, String> params = createStandardSearchRequest(keyword);
-        params.put(RESPONSEGROUP_PARAMETER, LARGE_RESPONSEGROUP_PARAMETER);
-
-        return sendSearchRequest(params, endpoint);
     }
 
     /**
@@ -132,8 +135,6 @@ public class AmazonClient {
         return params;
     }
 
-
-
     /**
      * Sends an ItemSearch request to Amazon.
      *
@@ -153,7 +154,14 @@ public class AmazonClient {
 
     }
 
-    public ItemLookupResponse sendItemLookupResponse(String ASIN, String endpoint) throws Exception{
+    /**
+     * Sends an itemLookup request to amazon.
+     * @param ASIN amazon standard item number
+     * @param endpoint amazon locale, the ending of the url http://amazon. , e.g. com, co.uk etc...
+     * @return itemLookupResponse object
+     * @throws Exception
+     */
+    public ItemLookupResponse sendItemLookupRequest(String ASIN, String endpoint) throws Exception{
 
         Map<String, String> originalRequest = createStandardLookupRequest(ASIN);
         String request = util.getRequest(originalRequest, endpoint);
@@ -165,6 +173,13 @@ public class AmazonClient {
 
     }
 
+    /**
+     * Sends an editorialLookup request to amazon
+     * @param ASIN amazon standard item number
+     * @param endpoint amazon locale, the ending of the url http://amazon. , e.g. com, co.uk etc...
+     * @return itemLookupResponse object
+     * @throws Exception
+     */
     public ItemLookupResponse sendEditorialLookupResponse(String ASIN, String endpoint) throws Exception{
 
         Map<String, String> originalRequest = createEditorialLookupRequest(ASIN);
@@ -177,23 +192,18 @@ public class AmazonClient {
 
     }
 
-    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId, String itemPageNumber) throws Exception{
+    /**
+     * Sends an binSearch request to amazon
+     * @param keyword search keyword
+     * @param browseNodeId browseNode id to narrow the search
+     * @param itemPageNumber result page number, a value between 1-10
+     * @return itemSearchResponse
+     * @throws Exception
+     */
+    public ItemSearchResponse sendBinSearchRequest(String keyword, String browseNodeId, String itemPageNumber, String endpoint) throws Exception{
         Map<String, String> originalRequest = getBinSearchRequest(keyword, browseNodeId, itemPageNumber);
 
-        return sendSearchRequest(originalRequest, ENDPOINT_US);
-    }
-
-    public static void main(String [] args) throws Exception{
-
-        Util util1 = new Util();
-        AmazonClient amazonClient = new AmazonClient(util1);
-
-       amazonClient.sendBinSearchRequest("Productivity", "4744", "2");
-
-        AsinEntityManager asin = new AsinEntityManager();
-        System.out.println(asin.getAsin("1878424505"));
-       //amazonClient.sendItemLookupResponse("0743269519", ENDPOINT_US);
-        //amazonClient.sendEditorialLookupResponse("0743269519", ENDPOINT_US);
+        return sendSearchRequest(originalRequest, endpoint);
     }
 
 }

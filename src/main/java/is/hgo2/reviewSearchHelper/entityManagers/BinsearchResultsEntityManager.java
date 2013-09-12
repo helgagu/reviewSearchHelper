@@ -103,4 +103,25 @@ public class BinsearchResultsEntityManager {
 
     }
 
+    /**
+     * Persist a list of binsearchResults objects to database
+     * @param binsearchResults binsearchResults object to persist
+     */
+    public void persist(BinsearchResults binsearchResults){
+
+        try{
+            trx.begin();
+            em.persist(binsearchResults);
+            trx.commit();
+            em.close();
+            emf.close();
+        } catch (ConstraintViolationException c) {
+            System.out.println("******************************************* Database error");
+            System.out.println(c.getConstraintViolations());
+            System.out.println("******************************************* Database error");
+            throw c;
+        }
+
+    }
+
 }

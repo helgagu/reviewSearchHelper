@@ -251,6 +251,11 @@ public class Util {
         responseFile.close();
     }
 
+    public byte[] unmarshalResponse(ItemSearchResponse response) throws Exception{
+        String xml = messageConverter.getMessage(ItemSearchResponse.class, response);
+        return xml.getBytes();
+    }
+
     public List<Asin> putAsin(ItemSearchResponse response){
         List<Asin> asins = new ArrayList<>();
         AsinEntityManager em = new AsinEntityManager();
