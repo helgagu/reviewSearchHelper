@@ -3,7 +3,9 @@ package is.hgo2.reviewSearchHelper;
 import au.com.bytecode.opencsv.CSVWriter;
 import is.hgo2.reviewSearchHelper.amazonMessages.*;
 import is.hgo2.reviewSearchHelper.entities.BinsearchResults;
+import is.hgo2.reviewSearchHelper.entities.Browsenodes;
 import is.hgo2.reviewSearchHelper.entityManagers.BinsearchResultsEntityManager;
+import is.hgo2.reviewSearchHelper.entityManagers.BrowsenodesEntityManager;
 import is.hgo2.reviewSearchHelper.util.Constants;
 import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
 import is.hgo2.reviewSearchHelper.util.JaxbMessageConverter;
@@ -63,23 +65,27 @@ public class BinSearch {
      * @param response             the response object of the ItemSearch with responseGroup = BinSearch
      * @return List of browseNodeIds
      */
-    public List<String> getBrowseNodeIds(ItemSearchResponse response) {
+    public void setBrowseNodeIds(ItemSearchResponse response, BinsearchResults binsearchResults) {
 
-        List<String> browseNodeIds = new ArrayList();
+        BrowsenodesEntityManager browseNodes = new BrowsenodesEntityManager();
+        List<Browsenodes> rows = new ArrayList<>();
+
         for (Items items : response.getItems()) {
             for (SearchBinSet bin : items.getSearchBinSets().getSearchBinSet()) {
                 for (Bin binDetails : bin.getBin()) {
-                        if (!ExclusionCriteria.excludeBrowseNodeId(binDetails.getBinName())) {
-                            if (resultsMoreThanHundred(binDetails.getBinItemCount())) {
-                                for (Bin.BinParameter param : binDetails.getBinParameter()) {
-                                    browseNodeIds.add(param.getValue());
-                                }
-                            }
-                        }
+                    Long binItemCount = binDetails.getBinItemCount().longValue();
+                    String binName = binDetails.getBinName();
+                    String browseNodeId = "";
+                    for (Bin.BinParameter param : binDetails.getBinParameter()) {
+                        browseNodeId = param.getValue();
+                    }
+
+                    rows.add(browseNodes.browsenodes(binItemCount, binName, browseNodeId, binsearchResults));
                 }
             }
         }
-        return browseNodeIds;
+
+        browseNodes.persist(rows);
     }
 
     /**
@@ -114,7 +120,6 @@ public class BinSearch {
 
         ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, null, null, endpoint);
         setBinSearchResults(response, keyword, endpoint);
-
     }
 
 
@@ -138,6 +143,7 @@ public class BinSearch {
         String timestamp = "";
         Long totalResults = null;
         Long totalPages = null;
+
         for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
            if (argument.getName().equalsIgnoreCase(Constants.TIMESTAMP_PARAMETER)) {
                 timestamp = argument.getValue();
@@ -157,13 +163,16 @@ public class BinSearch {
                responseGroup = argument.getValue();
            }
         }
+
         for(Items item: response.getItems()){
             totalPages = item.getTotalPages().longValue();
             totalResults = item.getTotalResults().longValue();
         }
+
         BinsearchResults binsearchresults = bin.binsearchResults(endpoint, keyword, util.unmarshalResponse(response), availability,
                 browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, totalResults, totalPages, timestamp);
         bin.persist(binsearchresults);
+        setBrowseNodeIds(response, binsearchresults);
     }
 
     public static void main(String [] args) throws Exception{
