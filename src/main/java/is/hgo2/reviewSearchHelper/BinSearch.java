@@ -138,32 +138,24 @@ public class BinSearch {
         String timestamp = "";
         Long totalResults = null;
         Long totalPages = null;
-        for(Arguments.Argument arg: response.getOperationRequest().getArguments().getArgument()){
-            //TODO: debug and see why not working
-            if(arg.getName() == Constants.AVAILABILITY_PARAMETER){
-                availability = arg.getValue();
-            }
-            if(arg.getName() == Constants.MERCHANTID_PARAMETER){
-                merchantId = arg.getValue();
-            }
-            if(arg.getName() == Constants.SORT_PARAMETER){
-                sort = arg.getValue();
-            }
-            if(arg.getName() == Constants.SEARCHINDEX_PARAMETER){
-                searchIndex = arg.getValue();
-            }
-            if(arg.getName() == Constants.RESPONSEGROUP_PARAMETER){
-                responseGroup = arg.getValue();
-            }
-            if(arg.getName() == Constants.BROWSENODE_PARAMETER){
-                browseNodeId = arg.getValue();
-            }
-            if(arg.getName() == Constants.POWER_PARAMETER){
-                powerSearch = arg.getValue();
-            }
-            if(arg.getName() == Constants.TIMESTAMP_PARAMETER){
-               timestamp = arg.getValue();
-            }
+        for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
+           if (argument.getName().equalsIgnoreCase(Constants.TIMESTAMP_PARAMETER)) {
+                timestamp = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.SEARCHINDEX_PARAMETER)) {
+                searchIndex = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.SORT_PARAMETER)) {
+                sort = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.POWER_PARAMETER)) {
+                powerSearch = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.AVAILABILITY_PARAMETER)) {
+                availability = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.MERCHANTID_PARAMETER)) {
+               merchantId = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.BROWSENODE_PARAMETER)) {
+               browseNodeId = argument.getValue();
+           } else if (argument.getName().equalsIgnoreCase(Constants.RESPONSEGROUP_PARAMETER)) {
+               responseGroup = argument.getValue();
+           }
         }
         for(Items item: response.getItems()){
             totalPages = item.getTotalPages().longValue();
