@@ -1,6 +1,5 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
-import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.entities.BinsearchResults;
 import is.hgo2.reviewSearchHelper.entities.Browsenodes;
 import is.hgo2.reviewSearchHelper.util.Constants;

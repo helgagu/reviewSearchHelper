@@ -3,14 +3,14 @@ package is.hgo2.reviewSearchHelper;
 import com.sun.jersey.api.client.ClientResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemLookupResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
-import is.hgo2.reviewSearchHelper.entities.Asin;
-import is.hgo2.reviewSearchHelper.entityManagers.AsinEntityManager;
 import is.hgo2.reviewSearchHelper.util.HttpClient;
 import is.hgo2.reviewSearchHelper.util.Util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static is.hgo2.reviewSearchHelper.util.Constants.*;
 

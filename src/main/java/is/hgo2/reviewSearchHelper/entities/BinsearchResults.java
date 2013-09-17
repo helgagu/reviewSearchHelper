@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "BinsearchResults.findByTotalPages", query = "SELECT b FROM BinsearchResults b WHERE b.totalPages = :totalPages"),
     @NamedQuery(name = "BinsearchResults.findByAmazonLocale", query = "SELECT b FROM BinsearchResults b WHERE b.amazonLocale = :amazonLocale"),
     @NamedQuery(name = "BinsearchResults.findBySearchParamsBrowseNodeId", query = "SELECT b FROM BinsearchResults b WHERE b.searchParamsBrowseNodeId = :searchParamsBrowseNodeId"),
+    @NamedQuery(name = "BinsearchResults.findBySearchParamsItemPage", query = "SELECT b FROM BinsearchResults b WHERE b.searchParamsItemPage = :searchParamsItemPage"),
     @NamedQuery(name = "BinsearchResults.findBySearchParamsSearchIndex", query = "SELECT b FROM BinsearchResults b WHERE b.searchParamsSearchIndex = :searchParamsSearchIndex"),
     @NamedQuery(name = "BinsearchResults.findBySearchParamsPowerSearch", query = "SELECT b FROM BinsearchResults b WHERE b.searchParamsPowerSearch = :searchParamsPowerSearch"),
     @NamedQuery(name = "BinsearchResults.findBySearchParamsSort", query = "SELECT b FROM BinsearchResults b WHERE b.searchParamsSort = :searchParamsSort"),
@@ -69,6 +70,8 @@ public class BinsearchResults implements Serializable {
     private String amazonLocale;
     @Column(name = "SearchParams_BrowseNodeId")
     private String searchParamsBrowseNodeId;
+    @Column(name = "SearchParams_ItemPage")
+    private String searchParamsItemPage;
     @Column(name = "SearchParams_SearchIndex")
     private String searchParamsSearchIndex;
     @Column(name = "SearchParams_PowerSearch")
@@ -94,6 +97,8 @@ public class BinsearchResults implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "binsearchResultsIdbinsearchResults")
+    private Collection<BrowsenodesAsin> browsenodesAsinCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idbinsearchResults")
     private Collection<Browsenodes> browsenodesCollection;
 
@@ -160,6 +165,14 @@ public class BinsearchResults implements Serializable {
 
     public void setSearchParamsBrowseNodeId(String searchParamsBrowseNodeId) {
         this.searchParamsBrowseNodeId = searchParamsBrowseNodeId;
+    }
+
+    public String getSearchParamsItemPage() {
+        return searchParamsItemPage;
+    }
+
+    public void setSearchParamsItemPage(String searchParamsItemPage) {
+        this.searchParamsItemPage = searchParamsItemPage;
     }
 
     public String getSearchParamsSearchIndex() {
@@ -240,6 +253,15 @@ public class BinsearchResults implements Serializable {
 
     public void setUpdatedTimestamp(Date updatedTimestamp) {
         this.updatedTimestamp = updatedTimestamp;
+    }
+
+    @XmlTransient
+    public Collection<BrowsenodesAsin> getBrowsenodesAsinCollection() {
+        return browsenodesAsinCollection;
+    }
+
+    public void setBrowsenodesAsinCollection(Collection<BrowsenodesAsin> browsenodesAsinCollection) {
+        this.browsenodesAsinCollection = browsenodesAsinCollection;
     }
 
     @XmlTransient

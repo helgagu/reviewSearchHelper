@@ -1,17 +1,19 @@
 package is.hgo2.reviewSearchHelper.util;
 
-import java.io.*;
+import com.sun.jersey.core.util.Base64;
+import is.hgo2.reviewSearchHelper.amazonMessages.Item;
+import is.hgo2.reviewSearchHelper.amazonMessages.ItemLookupResponse;
+import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
+import is.hgo2.reviewSearchHelper.amazonMessages.Items;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.FileWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.sun.jersey.core.util.Base64;
-import is.hgo2.reviewSearchHelper.amazonMessages.*;
-import is.hgo2.reviewSearchHelper.entities.Asin;
-import is.hgo2.reviewSearchHelper.entityManagers.AsinEntityManager;
 
 import static is.hgo2.reviewSearchHelper.util.Constants.*;
 

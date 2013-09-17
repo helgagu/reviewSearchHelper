@@ -51,6 +51,9 @@ public class BrowsenodesAsin implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
+    @JoinColumn(name = "binsearch_results_idbinsearch_results", referencedColumnName = "idbinsearch_results")
+    @ManyToOne(optional = false)
+    private BinsearchResults binsearchResultsIdbinsearchResults;
     @JoinColumn(name = "idbrowsenodes", referencedColumnName = "idbrowsenodes")
     @ManyToOne(optional = false)
     private Browsenodes idbrowsenodes;
@@ -101,6 +104,14 @@ public class BrowsenodesAsin implements Serializable {
 
     public void setUpdatedTimestamp(Date updatedTimestamp) {
         this.updatedTimestamp = updatedTimestamp;
+    }
+
+    public BinsearchResults getBinsearchResultsIdbinsearchResults() {
+        return binsearchResultsIdbinsearchResults;
+    }
+
+    public void setBinsearchResultsIdbinsearchResults(BinsearchResults binsearchResultsIdbinsearchResults) {
+        this.binsearchResultsIdbinsearchResults = binsearchResultsIdbinsearchResults;
     }
 
     public Browsenodes getIdbrowsenodes() {

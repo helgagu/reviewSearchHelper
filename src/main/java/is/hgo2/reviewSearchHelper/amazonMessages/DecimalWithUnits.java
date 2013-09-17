@@ -8,12 +8,8 @@
 
 package is.hgo2.reviewSearchHelper.amazonMessages;
 
+import javax.xml.bind.annotation.*;
 import java.math.BigDecimal;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**

@@ -13,10 +13,6 @@ import is.hgo2.reviewSearchHelper.util.Constants;
 import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
 import is.hgo2.reviewSearchHelper.util.Util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 
 public class BinSearch {
     private final Util util;
@@ -133,12 +129,12 @@ public class BinSearch {
 
     private ItemSearchResponse getBrowseNodeAsins(String browseNodesId, Browsenodes browsenodes, String keyword, String endpoint, String page) throws Exception {
         ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, browseNodesId, page, endpoint);
-        setBinSearchResults(response, keyword, endpoint, Boolean.FALSE);
-        setBrowseNodeAsin(browsenodes, response);
+        BinsearchResults bin = setBinSearchResults(response, keyword, endpoint, Boolean.FALSE);
+        setBrowseNodeAsin(browsenodes, response, bin);
         return response;
     }
 
-    private void setBrowseNodeAsin(Browsenodes browsenodes, ItemSearchResponse response) {
+    private void setBrowseNodeAsin(Browsenodes browsenodes, ItemSearchResponse response, BinsearchResults bin) {
 
         String asinNumber;
         Asin asin;
@@ -153,7 +149,7 @@ public class BinSearch {
                     asin = asinEm.asin(asinNumber);
                     asinEm.persist(asin);
                 }
-                BrowsenodesAsin browsenodesAsin = browsenodesAsinEm.asin(asinNumber, asin, browsenodes);
+                BrowsenodesAsin browsenodesAsin = browsenodesAsinEm.asin(asinNumber, asin, browsenodes, bin);
                 browsenodesAsinEm.persist(browsenodesAsin);
             }
         }
@@ -209,7 +205,7 @@ public class BinSearch {
      * @param endpoint the amazon locale, the ending of the url http://amazon. , e.g. com, co.uk etc...
      * @throws Exception
      */
-    public void setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
+    public BinsearchResults setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
 
         BinsearchResultsEntityManager bin = new BinsearchResultsEntityManager();
         String availability = "";
@@ -222,6 +218,7 @@ public class BinSearch {
         String timestamp = "";
         Long totalResults = null;
         Long totalPages = null;
+        String itemPage = "";
 
         for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
            if (argument.getName().equalsIgnoreCase(Constants.TIMESTAMP_PARAMETER)) {
@@ -240,6 +237,8 @@ public class BinSearch {
                browseNodeId = argument.getValue();
            } else if (argument.getName().equalsIgnoreCase(Constants.RESPONSEGROUP_PARAMETER)) {
                responseGroup = argument.getValue();
+           } else if (argument.getName().equalsIgnoreCase(Constants.ITEMPAGE_PARAMETER)){
+               itemPage = argument.getValue();
            }
         }
 
@@ -249,10 +248,11 @@ public class BinSearch {
         }
 
         BinsearchResults binsearchresults = bin.binsearchResults(endpoint, keyword, util.unmarshalResponse(response), availability,
-                browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, totalResults, totalPages, timestamp);
+                browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, totalResults, totalPages, itemPage, timestamp);
         bin.persist(binsearchresults);
         if(getBrowseNodes){
             setBrowseNodeIds(response, binsearchresults);
         }
+        return binsearchresults;
     }
 }

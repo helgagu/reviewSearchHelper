@@ -82,13 +82,6 @@ public class Constants {
     public static final String AVAILABILITY_VALUE = "Available";
     public static final String MERCHANTID_VALUE = "Amazon";
 
-    //Browse Id's to exclude
-    public static final String HEALTHFITNESSDIETING_BROWSENODE = "Health, Fitness & Dieting";
-    public static final String MEDICALBOOKS_BROWSENODE  = "Medical Books";
-    public static final String RELIGIONSPIRITUALITY_BROWSENODE = "Religion & Spirituality";
-    public static final String ARTPHOTOGRAPHY_BROWSENODE = "Arts & Photography";
-    public static final String INDUSTRY_SPECIFIC_EXCLUSIONREASON = "Industry Specific";
-
     public static final String PERSISTANCE_PROVIDER = "reviewSearchHelperEntityPU";
 }
 

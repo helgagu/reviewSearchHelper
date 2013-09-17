@@ -1,6 +1,5 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
-import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.entities.BinsearchResults;
 import is.hgo2.reviewSearchHelper.util.Constants;
 
@@ -9,7 +8,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.validation.ConstraintViolationException;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -61,6 +59,7 @@ public class BinsearchResultsEntityManager {
                                              String sort,
                                              Long totalResults,
                                              Long totalPages,
+                                             String itemPage,
                                              String requestTimestamp){
         BinsearchResults bin = new BinsearchResults();
         bin.setTimestamp(new Date());
@@ -69,6 +68,7 @@ public class BinsearchResultsEntityManager {
         bin.setOriginalResponse(originalResponse);
         bin.setRequestTimestamp(requestTimestamp);
         bin.setSearchParamsAvailability(availability);
+        bin.setSearchParamsItemPage(itemPage);
         bin.setSearchParamsBrowseNodeId(browseNodeId);
         bin.setSearchParamsMerchantId(merchantId);
         bin.setSearchParamsPowerSearch(powerSearch);
@@ -81,31 +81,8 @@ public class BinsearchResultsEntityManager {
     }
 
     /**
-     * Persist a list of binsearchResults objects to database
-     * @param binsearchResultses list of binsearchResults objects to persist
-     */
-    public void persist(List<BinsearchResults> binsearchResultses){
-
-        try{
-            trx.begin();
-            for(BinsearchResults row: binsearchResultses){
-                em.persist(row);
-            }
-            trx.commit();
-            em.close();
-            emf.close();
-        } catch (ConstraintViolationException c) {
-            System.out.println("******************************************* Database error");
-            System.out.println(c.getConstraintViolations());
-            System.out.println("******************************************* Database error");
-            throw c;
-        }
-
-    }
-
-    /**
-     * Persist a list of binsearchResults objects to database
-     * @param binsearchResults binsearchResults object to persist
+     * Persist a binsearchResult objects to database
+     * @param binsearchResults binsearchResult object to persist
      */
     public void persist(BinsearchResults binsearchResults){
 

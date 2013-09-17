@@ -1,6 +1,5 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
-import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.entities.Books;
 import is.hgo2.reviewSearchHelper.entities.Editorialreviews;
 import is.hgo2.reviewSearchHelper.util.Constants;

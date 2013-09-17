@@ -2,13 +2,10 @@ package is.hgo2.reviewSearchHelper.entityManagers;
 
 import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.util.Constants;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+
+import javax.persistence.*;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This is a class to work with the asin entity object. Insert into the asin table and fetch data from it.
@@ -42,16 +39,14 @@ public class AsinEntityManager {
     }
 
     /**
-     * Persist a list of asin objects to database
-     * @param asin list of asin objects to persist
+     * Persist a asin object to database
+     * @param asin asin object to persist
      */
-    public void persist(List<Asin> asin){
+    public void persist(Asin asin){
 
         try{
             trx.begin();
-            for(Asin row: asin){
-                em.persist(row);
-            }
+            em.persist(asin);
             trx.commit();
             em.close();
             emf.close();
@@ -70,8 +65,12 @@ public class AsinEntityManager {
      * @return asin object for the asinNumber
      */
     public Asin getAsin(String asinNumber){
-        Asin asin = (Asin) em.createNamedQuery("Asin.findByAsin").setParameter("asin", asinNumber).getSingleResult();
-        return asin;
+        try{
+            Asin asin = (Asin) em.createNamedQuery("Asin.findByAsin").setParameter("asin", asinNumber).getSingleResult();
+            return asin;
+        } catch (NoResultException e){
+            return null;
+        }
     }
 
 }
