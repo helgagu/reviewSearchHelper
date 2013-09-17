@@ -46,16 +46,14 @@ public class BrowsenodesAsinEntityManager {
     }
 
     /**
-     * Persist a list of browsenodesAsin objects to database
-     * @param browsenodesAsins list of browsenodesAsins objects to persist
+     * Persist a browsenodesAsin object to database
+     * @param browsenodesAsin browsenodesAsin objects to persist
      */
-    public void persist(List<BrowsenodesAsin> browsenodesAsins){
+    public void persist(BrowsenodesAsin browsenodesAsin){
 
         try{
             trx.begin();
-            for(BrowsenodesAsin row: browsenodesAsins){
-                em.persist(row);
-            }
+            em.persist(browsenodesAsin);
             trx.commit();
             em.close();
             emf.close();

@@ -86,25 +86,8 @@ public class Constants {
     public static final String HEALTHFITNESSDIETING_BROWSENODE = "Health, Fitness & Dieting";
     public static final String MEDICALBOOKS_BROWSENODE  = "Medical Books";
     public static final String RELIGIONSPIRITUALITY_BROWSENODE = "Religion & Spirituality";
-    public static final String ARTPHOTOGRAPHY_BROWSENODE = "Art & Photography";
-
-
-    //Array Indexes for BinList CSV columns
-    public static final int BINLIST_CSV_ARRAYSIZE = 14;
-    public static final int BROWSENODEID_ARRAYINDEX_BINLIST_CSV = 0;
-    public static final int BINNAME_ARRAYINDEX_BINLIST_CSV = 1;
-    public static final int BINITEMCOUNT_ARRAYINDEX_BINLIST_CSV = 2;
-    public static final int PARENTBROWSENODEID_ARRAYINDEX_BINLIST_CSV = 3;
-    public static final int PARENTBINNAME_ARRAYINDEX_BINLIST_CSV = 4;
-    public static final int SEARCHKEYWORD_ARRAYINDEX_BINLIST_CSV = 5;
-    public static final int NARROWEDBY_ARRAYINDEX_BINLIST_CSV = 6;
-    public static final int SEARCHINDEX_ARRAYINDEX_BINLIST_CSV = 7;
-    public static final int SORT_ARRAYINDEX_BINLIST_CSV = 8;
-    public static final int POWERSEARCH_ARRAYINDEX_BINLIST_CSV = 9;
-    public static final int AVAILABILITY_ARRAYINDEX_BINLIST_CSV = 10;
-    public static final int MERCHANTID_ARRAYINDEX_BINLIST_CSV = 11;
-    public static final int RESULTTIMESTAMP_ARRAYINDEX_BINLIST_CSV = 12;
-    public static final int RESPONSELOCATION_ARRAYINDEX_BINLIST_CSV = 13;
+    public static final String ARTPHOTOGRAPHY_BROWSENODE = "Arts & Photography";
+    public static final String INDUSTRY_SPECIFIC_EXCLUSIONREASON = "Industry Specific";
 
     public static final String PERSISTANCE_PROVIDER = "reviewSearchHelperEntityPU";
 }

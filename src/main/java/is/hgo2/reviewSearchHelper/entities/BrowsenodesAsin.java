@@ -141,7 +141,7 @@ public class BrowsenodesAsin implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.BrowsenodesAsin[ idbrowsenodesAsin=" + idbrowsenodesAsin + " ]";
+        return "entitites.BrowsenodesAsin[ idbrowsenodesAsin=" + idbrowsenodesAsin + " ]";
     }
     
 }

@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Browsenodes.findByBinName", query = "SELECT b FROM Browsenodes b WHERE b.binName = :binName"),
     @NamedQuery(name = "Browsenodes.findByBinItemCount", query = "SELECT b FROM Browsenodes b WHERE b.binItemCount = :binItemCount"),
     @NamedQuery(name = "Browsenodes.findByBrowseNodeId", query = "SELECT b FROM Browsenodes b WHERE b.browseNodeId = :browseNodeId"),
+    @NamedQuery(name = "Browsenodes.findByParentBrowseNode", query = "SELECT b FROM Browsenodes b WHERE b.parentBrowseNode = :parentBrowseNode"),
+    @NamedQuery(name = "Browsenodes.findByExclusionReason", query = "SELECT b FROM Browsenodes b WHERE b.exclusionReason = :exclusionReason"),
     @NamedQuery(name = "Browsenodes.findByTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.timestamp = :timestamp"),
     @NamedQuery(name = "Browsenodes.findByUpdatedTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.updatedTimestamp = :updatedTimestamp")})
 public class Browsenodes implements Serializable {
@@ -56,6 +58,10 @@ public class Browsenodes implements Serializable {
     @Basic(optional = false)
     @Column(name = "BrowseNodeId")
     private String browseNodeId;
+    @Column(name = "parentBrowseNode")
+    private String parentBrowseNode;
+    @Column(name = "exclusionReason")
+    private String exclusionReason;
     @Basic(optional = false)
     @Column(name = "Timestamp")
     @Temporal(TemporalType.TIMESTAMP)
@@ -116,6 +122,22 @@ public class Browsenodes implements Serializable {
         this.browseNodeId = browseNodeId;
     }
 
+    public String getParentBrowseNode() {
+        return parentBrowseNode;
+    }
+
+    public void setParentBrowseNode(String parentBrowseNode) {
+        this.parentBrowseNode = parentBrowseNode;
+    }
+
+    public String getExclusionReason() {
+        return exclusionReason;
+    }
+
+    public void setExclusionReason(String exclusionReason) {
+        this.exclusionReason = exclusionReason;
+    }
+
     public Date getTimestamp() {
         return timestamp;
     }
@@ -171,7 +193,7 @@ public class Browsenodes implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.Browsenodes[ idbrowsenodes=" + idbrowsenodes + " ]";
+        return "entitites.Browsenodes[ idbrowsenodes=" + idbrowsenodes + " ]";
     }
     
 }

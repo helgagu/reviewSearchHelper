@@ -85,8 +85,8 @@ public class BinsearchResults implements Serializable {
     private String requestTimestamp;
     @Basic(optional = false)
     @Lob
-    @Column(name = "OriginalRequest")
-    private byte[] originalRequest;
+    @Column(name = "OriginalResponse")
+    private byte[] originalResponse;
     @Basic(optional = false)
     @Column(name = "Timestamp")
     @Temporal(TemporalType.TIMESTAMP)
@@ -104,13 +104,13 @@ public class BinsearchResults implements Serializable {
         this.idbinsearchResults = idbinsearchResults;
     }
 
-    public BinsearchResults(Integer idbinsearchResults, String keyword, long totalResults, long totalPages, String amazonLocale, byte[] originalRequest, Date timestamp) {
+    public BinsearchResults(Integer idbinsearchResults, String keyword, long totalResults, long totalPages, String amazonLocale, byte[] originalResponse, Date timestamp) {
         this.idbinsearchResults = idbinsearchResults;
         this.keyword = keyword;
         this.totalResults = totalResults;
         this.totalPages = totalPages;
         this.amazonLocale = amazonLocale;
-        this.originalRequest = originalRequest;
+        this.originalResponse = originalResponse;
         this.timestamp = timestamp;
     }
 
@@ -218,12 +218,12 @@ public class BinsearchResults implements Serializable {
         this.requestTimestamp = requestTimestamp;
     }
 
-    public byte[] getOriginalRequest() {
-        return originalRequest;
+    public byte[] getOriginalResponse() {
+        return originalResponse;
     }
 
-    public void setOriginalRequest(byte[] originalRequest) {
-        this.originalRequest = originalRequest;
+    public void setOriginalResponse(byte[] originalResponse) {
+        this.originalResponse = originalResponse;
     }
 
     public Date getTimestamp() {
@@ -273,7 +273,7 @@ public class BinsearchResults implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.BinsearchResults[ idbinsearchResults=" + idbinsearchResults + " ]";
+        return "entitites.BinsearchResults[ idbinsearchResults=" + idbinsearchResults + " ]";
     }
     
 }

@@ -66,7 +66,7 @@ public class BinsearchResultsEntityManager {
         bin.setTimestamp(new Date());
         bin.setAmazonLocale(amazonLocale);
         bin.setKeyword(keyword);
-        bin.setOriginalRequest(originalResponse);
+        bin.setOriginalResponse(originalResponse);
         bin.setRequestTimestamp(requestTimestamp);
         bin.setSearchParamsAvailability(availability);
         bin.setSearchParamsBrowseNodeId(browseNodeId);

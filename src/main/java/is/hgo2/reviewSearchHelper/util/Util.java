@@ -256,19 +256,6 @@ public class Util {
         return xml.getBytes();
     }
 
-    public List<Asin> putAsin(ItemSearchResponse response){
-        List<Asin> asins = new ArrayList<>();
-        AsinEntityManager em = new AsinEntityManager();
-        for(Items items: response.getItems()){
-            for(Item item: items.getItem()){
-                 asins.add(em.asin(item.getASIN()));
-            }
-        }
-        em.persist(asins);
-        return asins;
-    }
-
-
     public void writeOriginalResponseToFile(ItemLookupResponse response) throws Exception{
 
         String filename =  AMAZON_RESPONSE_ITEMLOOKUP_FILENAME + getDateTimeStamp();

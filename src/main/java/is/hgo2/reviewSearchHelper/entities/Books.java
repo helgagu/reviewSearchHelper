@@ -49,6 +49,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Books.findByDetailPageUrl", query = "SELECT b FROM Books b WHERE b.detailPageUrl = :detailPageUrl"),
     @NamedQuery(name = "Books.findByEisbn", query = "SELECT b FROM Books b WHERE b.eisbn = :eisbn"),
     @NamedQuery(name = "Books.findByBinding", query = "SELECT b FROM Books b WHERE b.binding = :binding"),
+    @NamedQuery(name = "Books.findByAmazonLocale", query = "SELECT b FROM Books b WHERE b.amazonLocale = :amazonLocale"),
+    @NamedQuery(name = "Books.findByExclusionReason", query = "SELECT b FROM Books b WHERE b.exclusionReason = :exclusionReason"),
     @NamedQuery(name = "Books.findByTimestamp", query = "SELECT b FROM Books b WHERE b.timestamp = :timestamp"),
     @NamedQuery(name = "Books.findByUpdatedTimestamp", query = "SELECT b FROM Books b WHERE b.updatedTimestamp = :updatedTimestamp")})
 public class Books implements Serializable {
@@ -86,9 +88,14 @@ public class Books implements Serializable {
     @Column(name = "binding")
     private String binding;
     @Basic(optional = false)
+    @Column(name = "AmazonLocale")
+    private String amazonLocale;
+    @Basic(optional = false)
     @Lob
-    @Column(name = "originalRequest")
-    private byte[] originalRequest;
+    @Column(name = "originalResponse")
+    private byte[] originalResponse;
+    @Column(name = "exclusionReason")
+    private String exclusionReason;
     @Basic(optional = false)
     @Column(name = "Timestamp")
     @Temporal(TemporalType.TIMESTAMP)
@@ -109,12 +116,13 @@ public class Books implements Serializable {
         this.idbooks = idbooks;
     }
 
-    public Books(Integer idbooks, String isbn, String title, String authors, byte[] originalRequest, Date timestamp) {
+    public Books(Integer idbooks, String isbn, String title, String authors, String amazonLocale, byte[] originalResponse, Date timestamp) {
         this.idbooks = idbooks;
         this.isbn = isbn;
         this.title = title;
         this.authors = authors;
-        this.originalRequest = originalRequest;
+        this.amazonLocale = amazonLocale;
+        this.originalResponse = originalResponse;
         this.timestamp = timestamp;
     }
 
@@ -222,12 +230,28 @@ public class Books implements Serializable {
         this.binding = binding;
     }
 
-    public byte[] getOriginalRequest() {
-        return originalRequest;
+    public String getAmazonLocale() {
+        return amazonLocale;
     }
 
-    public void setOriginalRequest(byte[] originalRequest) {
-        this.originalRequest = originalRequest;
+    public void setAmazonLocale(String amazonLocale) {
+        this.amazonLocale = amazonLocale;
+    }
+
+    public byte[] getOriginalResponse() {
+        return originalResponse;
+    }
+
+    public void setOriginalResponse(byte[] originalResponse) {
+        this.originalResponse = originalResponse;
+    }
+
+    public String getExclusionReason() {
+        return exclusionReason;
+    }
+
+    public void setExclusionReason(String exclusionReason) {
+        this.exclusionReason = exclusionReason;
     }
 
     public Date getTimestamp() {
@@ -285,7 +309,7 @@ public class Books implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.Books[ idbooks=" + idbooks + " ]";
+        return "entitites.Books[ idbooks=" + idbooks + " ]";
     }
     
 }

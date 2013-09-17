@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,6 +38,9 @@ public class Notaccessibleitems implements Serializable {
     @Basic(optional = false)
     @Column(name = "idnotAccessibleItems")
     private Integer idnotAccessibleItems;
+    @Lob
+    @Column(name = "originalResponse")
+    private byte[] originalResponse;
     @Basic(optional = false)
     @Column(name = "Timestamp")
     @Temporal(TemporalType.TIMESTAMP)
@@ -66,6 +70,14 @@ public class Notaccessibleitems implements Serializable {
 
     public void setIdnotAccessibleItems(Integer idnotAccessibleItems) {
         this.idnotAccessibleItems = idnotAccessibleItems;
+    }
+
+    public byte[] getOriginalResponse() {
+        return originalResponse;
+    }
+
+    public void setOriginalResponse(byte[] originalResponse) {
+        this.originalResponse = originalResponse;
     }
 
     public Date getTimestamp() {
@@ -114,7 +126,7 @@ public class Notaccessibleitems implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.Notaccessibleitems[ idnotAccessibleItems=" + idnotAccessibleItems + " ]";
+        return "entitites.Notaccessibleitems[ idnotAccessibleItems=" + idnotAccessibleItems + " ]";
     }
     
 }

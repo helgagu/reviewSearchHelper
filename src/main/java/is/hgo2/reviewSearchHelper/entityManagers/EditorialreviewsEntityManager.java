@@ -47,7 +47,7 @@ public class EditorialreviewsEntityManager {
         editorialreviews.setTimestamp(new Date());
         editorialreviews.setEditorialReview(editorialreviewsMsg);
         editorialreviews.setIdbooks(books);
-        editorialreviews.setOriginalRequest(originalResponse);
+        editorialreviews.setOriginalResponse(originalResponse);
         editorialreviews.setSource(source);
         return editorialreviews;
     }

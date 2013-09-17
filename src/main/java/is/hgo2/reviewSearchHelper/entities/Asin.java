@@ -154,7 +154,7 @@ public class Asin implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.Asin[ idasin=" + idasin + " ]";
+        return "entitites.Asin[ idasin=" + idasin + " ]";
     }
     
 }

@@ -66,7 +66,7 @@ public class BooksEntityManager {
                        String authors){
         Books books = new Books();
         books.setTimestamp(new Date());
-        books.setOriginalRequest(originalResponse);
+        books.setOriginalResponse(originalResponse);
         books.setAuthors(authors);
         books.setBinding(binding);
         books.setDetailPageUrl(detailUrl);

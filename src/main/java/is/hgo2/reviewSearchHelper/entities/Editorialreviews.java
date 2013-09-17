@@ -49,8 +49,8 @@ public class Editorialreviews implements Serializable {
     private String source;
     @Basic(optional = false)
     @Lob
-    @Column(name = "originalRequest")
-    private byte[] originalRequest;
+    @Column(name = "originalResponse")
+    private byte[] originalResponse;
     @Basic(optional = false)
     @Column(name = "Timestamp")
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,9 +69,9 @@ public class Editorialreviews implements Serializable {
         this.ideditorialReviews = ideditorialReviews;
     }
 
-    public Editorialreviews(Integer ideditorialReviews, byte[] originalRequest, Date timestamp) {
+    public Editorialreviews(Integer ideditorialReviews, byte[] originalResponse, Date timestamp) {
         this.ideditorialReviews = ideditorialReviews;
-        this.originalRequest = originalRequest;
+        this.originalResponse = originalResponse;
         this.timestamp = timestamp;
     }
 
@@ -99,12 +99,12 @@ public class Editorialreviews implements Serializable {
         this.source = source;
     }
 
-    public byte[] getOriginalRequest() {
-        return originalRequest;
+    public byte[] getOriginalResponse() {
+        return originalResponse;
     }
 
-    public void setOriginalRequest(byte[] originalRequest) {
-        this.originalRequest = originalRequest;
+    public void setOriginalResponse(byte[] originalResponse) {
+        this.originalResponse = originalResponse;
     }
 
     public Date getTimestamp() {
@@ -153,7 +153,7 @@ public class Editorialreviews implements Serializable {
 
     @Override
     public String toString() {
-        return "bla.Editorialreviews[ ideditorialReviews=" + ideditorialReviews + " ]";
+        return "entitites.Editorialreviews[ ideditorialReviews=" + ideditorialReviews + " ]";
     }
     
 }
