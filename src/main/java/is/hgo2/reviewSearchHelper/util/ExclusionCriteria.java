@@ -3,8 +3,6 @@ package is.hgo2.reviewSearchHelper.util;
 import is.hgo2.reviewSearchHelper.entities.Excludedbrowsenodes;
 import is.hgo2.reviewSearchHelper.entityManagers.ExcludedbrowsenodesEntityManager;
 
-import static is.hgo2.reviewSearchHelper.util.Constants.*;
-
 /**
  * Here is the logic for exclusion criteria.
  *

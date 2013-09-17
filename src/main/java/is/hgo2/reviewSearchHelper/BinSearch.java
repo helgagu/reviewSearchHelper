@@ -13,7 +13,9 @@ import is.hgo2.reviewSearchHelper.util.Constants;
 import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
 import is.hgo2.reviewSearchHelper.util.Util;
 
-
+/**
+ * Class for the binSearch, browseNodes and ASIN extraction from the Amazon Product Advertising API
+ */
 public class BinSearch {
     private final Util util;
     private final AmazonClient amazonClient;
@@ -27,89 +29,102 @@ public class BinSearch {
         this.amazonClient = new AmazonClient(util);
     }
 
-    /**
-     * Find a BrowseNodeId name by finding the name of the bin for that browseNodeId.
-     *
-     * @param response     the response object of the ItemSearch with responseGroup = BinSearch
-     * @param browseNodeId the id of a specific browseNode (category for a subject)
-     * @return string with the browseNodeId name
-     */
-    public String getBrowseNodeIdName(ItemSearchResponse response, String browseNodeId) {
-
-        if (response != null) {
-            for (Items items : response.getItems()) {
-                for (SearchBinSet bin : items.getSearchBinSets().getSearchBinSet()) {
-                    for (Bin binDetails : bin.getBin()) {
-                        for (Bin.BinParameter param : binDetails.getBinParameter()) {
-                            if (browseNodeId.equalsIgnoreCase(param.getValue())) {
-                                return binDetails.getBinName();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * This fetches all the browseNodesIds in a bin list returned by an ItemSearch with responseGroup = BinSearch
      * if the binItemCount is more than 100 and needs to be narrowed more. <p><p>
      * <p/>
-     * Exclusion criteria can also be applied, the exclusion criteria applied are defined in ExclusionCriteria.excludeBrowseNodeId(bin name).
-     * The exclusion criteria were analyzed manually.
+     * If there are no more browseNode children or if the binItemCount is less than 100, then the first 100 ASIN is extracted (amazon standard item number)
+     * from the result set. Amazon Product Advertising API does not allow fetching more results than that.
+     *
+     * After this method these database tables have been filled with data <p>
+     *     - browsenodes <p>
+     *     - browsenodesAsin <p>
+     *     - asin <p>
      *
      * @param response the response object of the ItemSearch with responseGroup = BinSearch
+     * @param binsearchResults the saved binsearchResults object for this response.
      */
     public void setBrowseNodeIds(ItemSearchResponse response, BinsearchResults binsearchResults) throws Exception{
 
         for (Items items : response.getItems()) {
             for (SearchBinSet bin : items.getSearchBinSets().getSearchBinSet()) {
                 if(bin.getBin().size() == 0){
-                    String searchParamBrowseNode = binsearchResults.getSearchParamsBrowseNodeId();
-
-                    BrowsenodesEntityManager browsenodesEm = new BrowsenodesEntityManager();
-                    Browsenodes bn = browsenodesEm.getBrowsenodes(searchParamBrowseNode);
-
-                    if(bn.getExclusionReason() == null){
-                        setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, bn);
-                    }
-
+                    setAllBrowseNodesAsinForNoChildBrowseNodes(binsearchResults);
                 }
 
                 for (Bin binDetails : bin.getBin()) {
-                    BrowsenodesEntityManager browseNodesEm = new BrowsenodesEntityManager();
+                    Browsenodes browsenodes = setBrowsenode(response, binsearchResults, binDetails);
 
-                    Long binItemCount = binDetails.getBinItemCount().longValue();
-                    String binName = binDetails.getBinName();
-                    String browseNodeId = "";
-                    String parentBrowseNodeId = "";
-
-                    for (Bin.BinParameter param : binDetails.getBinParameter()) {
-                        browseNodeId = param.getValue();
-                    }
-                    for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
-                        if (argument.getName().equalsIgnoreCase(Constants.BROWSENODE_PARAMETER)) {
-                            parentBrowseNodeId = argument.getValue();
-                        }
-                    }
-                    String exclusionReason = ExclusionCriteria.excludeBrowseNodeId(binName);
-
-                    Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, binsearchResults);
-                    browseNodesEm.persist(browsenodes);
-
-                    if(resultsLessThanHundred(binItemCount)){
-                        if(exclusionReason == null){
-                          setAllBrowseNodesAsin(browseNodeId, binsearchResults, browsenodes);
+                    if(resultsLessThanHundred(browsenodes.getBinItemCount())){
+                        if(browsenodes.getExclusionReason() == null){
+                          setAllBrowseNodesAsin(browsenodes.getBrowseNodeId(), binsearchResults, browsenodes);
                         }
                     } else{
-                        getAllBrowseNodes(binsearchResults.getKeyword(), binsearchResults.getAmazonLocale(), browseNodeId);
+                        getAllBrowseNodes(binsearchResults.getKeyword(), binsearchResults.getAmazonLocale(), browsenodes.getBrowseNodeId());
                     }
                 }
             }
         }
     }
 
+    /**
+     * Inserts into the browsenodes database table.
+     * @param response the itemSearchResponse from amazon
+     * @param binsearchResults the object from the database table binsearch_results for the response
+     * @param binDetails the bin from the itemSearchResponse to be saved in browsenodes
+     * @return browsenodes object that has been saved in the database
+     */
+    private Browsenodes setBrowsenode(ItemSearchResponse response, BinsearchResults binsearchResults, Bin binDetails) {
+        BrowsenodesEntityManager browseNodesEm = new BrowsenodesEntityManager();
+
+        Long binItemCount = binDetails.getBinItemCount().longValue();
+        String binName = binDetails.getBinName();
+        String browseNodeId = "";
+        String parentBrowseNodeId = "";
+
+        for (Bin.BinParameter param : binDetails.getBinParameter()) {
+            browseNodeId = param.getValue();
+        }
+        for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
+            if (argument.getName().equalsIgnoreCase(Constants.BROWSENODE_PARAMETER)) {
+                parentBrowseNodeId = argument.getValue();
+            }
+        }
+        String exclusionReason = ExclusionCriteria.excludeBrowseNodeId(binName);
+
+        Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, binsearchResults);
+        browseNodesEm.persist(browsenodes);
+        return browsenodes;
+    }
+
+    /**
+     * When a browsenode has no more children, then extract the ASIN from the response.
+     *
+     * Get the first 100 results by sending a request for result pages 1-10
+     * @param binsearchResults the binsearch_results object saved in the database for the response
+     * @throws Exception
+     */
+    private void setAllBrowseNodesAsinForNoChildBrowseNodes(BinsearchResults binsearchResults) throws Exception {
+        String searchParamBrowseNode = binsearchResults.getSearchParamsBrowseNodeId();
+
+        BrowsenodesEntityManager browsenodesEm = new BrowsenodesEntityManager();
+        Browsenodes bn = browsenodesEm.getBrowsenodes(searchParamBrowseNode);
+
+        if(bn.getExclusionReason() == null){
+            setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, bn);
+        }
+    }
+
+    /**
+     * Gets all the ASIN from the browseNodes responses, result pages 1-10, and saves into databasetable browsenodesAsin
+     * and database table asin (if it doesn't exist there already).
+     * The amazon product advertising api only allows fetching of the first 100 results.
+     * @param browseNodesId the browsenodesId needed as a search parameter
+     * @param binsearchResults the binsearchResults for the resposne
+     * @param browsenodes the browsenodes object of the response
+     * @throws Exception
+     */
     public void setAllBrowseNodesAsin(String browseNodesId, BinsearchResults binsearchResults, Browsenodes browsenodes) throws Exception{
 
         String keyword = binsearchResults.getKeyword();
@@ -127,6 +142,17 @@ public class BinSearch {
         }
     }
 
+    /**
+     * Sends a search request for each result page for a specific browsenodeId. This inserts each search response in binSearch_results
+     * and extracts the aain to insert into browseNodesAsin
+     * @param browseNodesId the browsenodesId to use as a search parameter
+     * @param browsenodes the browsenodes object of the response
+     * @param keyword the search keyword
+     * @param endpoint the search endpoint
+     * @param page the result page number
+     * @return ItemSearchResponse
+     * @throws Exception
+     */
     private ItemSearchResponse getBrowseNodeAsins(String browseNodesId, Browsenodes browsenodes, String keyword, String endpoint, String page) throws Exception {
         ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, browseNodesId, page, endpoint);
         BinsearchResults bin = setBinSearchResults(response, keyword, endpoint, Boolean.FALSE);
@@ -134,6 +160,14 @@ public class BinSearch {
         return response;
     }
 
+    /**
+     * Inserts into the database tables, browseNodesAsin and ASIN.
+     *  - ASIN is a table for a list of unique ASIN's
+     *  - browseNodesAsin is a table for all the ASIN's per browseNodes search
+     * @param browsenodes browsenodes object which the ASINs are being extracted from
+     * @param response the search response
+     * @param bin the binsearch_results object for the search request
+     */
     private void setBrowseNodeAsin(Browsenodes browsenodes, ItemSearchResponse response, BinsearchResults bin) {
 
         String asinNumber;
@@ -155,12 +189,18 @@ public class BinSearch {
         }
     }
 
+    /**
+     * Gets the totalpages value for a specific search response
+     * @param response the response to get the total pages for
+     * @return totalpages as int
+     */
     public int getTotalPages(ItemSearchResponse response){
 
+        int totalpages = 0;
         for(Items item: response.getItems()){
-            return item.getTotalPages().intValue();
+             totalpages = item.getTotalPages().intValue();
         }
-        return 0;
+        return totalpages;
     }
 
     /**
@@ -189,6 +229,8 @@ public class BinSearch {
      * A request will then be sent for each child browseNode which is not excluded by the exclusion criteria.
      *
      * @param keyword the search keyword, this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
+     * @param endpoint the amazon locale endooint e.g. com, co.uk
+     * @param browseNodeId the browseNodeId search parameter
      * @throws Exception
      */
     public void getAllBrowseNodes(String keyword, String endpoint, String browseNodeId) throws Exception{
@@ -201,13 +243,40 @@ public class BinSearch {
     /**
      * Set the values in a binsearch object
      * @param response the amazon itemSearchResponse
-     * @param keyword the serach keyword
+     * @param keyword the search keyword
      * @param endpoint the amazon locale, the ending of the url http://amazon. , e.g. com, co.uk etc...
+     * @param getBrowseNodes true=call method setBrowseNodeIds to get the browsenodes children, false = do not call the method, the binItemCount < 100 we do not need to narrow the search more.
      * @throws Exception
      */
     public BinsearchResults setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
 
         BinsearchResultsEntityManager bin = new BinsearchResultsEntityManager();
+        Long totalResults = null;
+        Long totalPages = null;
+
+        for(Items item: response.getItems()){
+            totalPages = item.getTotalPages().longValue();
+            totalResults = item.getTotalResults().longValue();
+        }
+
+        BinsearchResults binsearchresults = bin.binsearchResults(endpoint, keyword, util.unmarshalResponse(response), totalResults, totalPages);
+        binsearchresults = setSearchParamsInBinSearchResults(response, bin, binsearchresults);
+        bin.persist(binsearchresults);
+
+        if(getBrowseNodes){
+            setBrowseNodeIds(response, binsearchresults);
+        }
+        return binsearchresults;
+    }
+
+    /**
+     * Add search parameters from argument in the response to the binsearch_result object
+     * @param response the search response
+     * @param bin the binsearchResultsEntityManager to work with the same binsearchresults object
+     * @param binsearchresults the binsearchresults object to add the search parameters to
+     * @return binsearchresults with the added values
+     */
+    private BinsearchResults setSearchParamsInBinSearchResults(ItemSearchResponse response, BinsearchResultsEntityManager bin, BinsearchResults binsearchresults) {
         String availability = "";
         String merchantId = "";
         String sort = "";
@@ -216,12 +285,10 @@ public class BinSearch {
         String browseNodeId = "";
         String powerSearch = "";
         String timestamp = "";
-        Long totalResults = null;
-        Long totalPages = null;
         String itemPage = "";
 
         for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
-           if (argument.getName().equalsIgnoreCase(Constants.TIMESTAMP_PARAMETER)) {
+            if (argument.getName().equalsIgnoreCase(Constants.TIMESTAMP_PARAMETER)) {
                 timestamp = argument.getValue();
             } else if (argument.getName().equalsIgnoreCase(Constants.SEARCHINDEX_PARAMETER)) {
                 searchIndex = argument.getValue();
@@ -232,27 +299,16 @@ public class BinSearch {
             } else if (argument.getName().equalsIgnoreCase(Constants.AVAILABILITY_PARAMETER)) {
                 availability = argument.getValue();
             } else if (argument.getName().equalsIgnoreCase(Constants.MERCHANTID_PARAMETER)) {
-               merchantId = argument.getValue();
+                merchantId = argument.getValue();
             } else if (argument.getName().equalsIgnoreCase(Constants.BROWSENODE_PARAMETER)) {
-               browseNodeId = argument.getValue();
-           } else if (argument.getName().equalsIgnoreCase(Constants.RESPONSEGROUP_PARAMETER)) {
-               responseGroup = argument.getValue();
-           } else if (argument.getName().equalsIgnoreCase(Constants.ITEMPAGE_PARAMETER)){
-               itemPage = argument.getValue();
-           }
+                browseNodeId = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.RESPONSEGROUP_PARAMETER)) {
+                responseGroup = argument.getValue();
+            } else if (argument.getName().equalsIgnoreCase(Constants.ITEMPAGE_PARAMETER)){
+                itemPage = argument.getValue();
+            }
         }
-
-        for(Items item: response.getItems()){
-            totalPages = item.getTotalPages().longValue();
-            totalResults = item.getTotalResults().longValue();
-        }
-
-        BinsearchResults binsearchresults = bin.binsearchResults(endpoint, keyword, util.unmarshalResponse(response), availability,
-                browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, totalResults, totalPages, itemPage, timestamp);
-        bin.persist(binsearchresults);
-        if(getBrowseNodes){
-            setBrowseNodeIds(response, binsearchresults);
-        }
+        binsearchresults = bin.addSearchParamsBinsearchResults(binsearchresults, availability, browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, itemPage, timestamp);
         return binsearchresults;
     }
 }

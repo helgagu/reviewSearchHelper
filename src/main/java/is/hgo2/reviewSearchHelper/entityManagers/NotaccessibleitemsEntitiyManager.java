@@ -10,7 +10,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Class to work with the notaccessibleitems table, insert and fetch data
@@ -31,7 +30,7 @@ public class NotaccessibleitemsEntitiyManager {
     }
 
     /**
-     * Creates the asin insert object
+     * Creates the notaccessibleitems insert object
      * @param asin the asin object
      * @return notaccessibleitems object with asin value and timestamp
      */
@@ -43,16 +42,14 @@ public class NotaccessibleitemsEntitiyManager {
     }
 
     /**
-     * Persist a list of notaccessibleitems objects to database
-     * @param notaccessibleitemses list of notaccessibleitems objects to persist
+     * Persist notaccessibleitem object to database
+     * @param notaccessibleitems notaccessibleitem object to persist
      */
-    public void persist(List<Notaccessibleitems> notaccessibleitemses){
+    public void persist(Notaccessibleitems notaccessibleitems){
 
         try{
             trx.begin();
-            for(Notaccessibleitems row: notaccessibleitemses){
-                em.persist(row);
-            }
+            em.persist(notaccessibleitems);
             trx.commit();
             em.close();
             emf.close();

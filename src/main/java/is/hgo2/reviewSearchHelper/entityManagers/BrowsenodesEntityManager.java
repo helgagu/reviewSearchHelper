@@ -7,7 +7,6 @@ import is.hgo2.reviewSearchHelper.util.Constants;
 import javax.persistence.*;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This is a class to work with the browsenodes database object, insert and fetch objects
@@ -54,29 +53,6 @@ public class BrowsenodesEntityManager {
     }
 
     /**
-     * Persist a list of browsenodes objects to database
-     * @param browsenodeses list of browsenodes objects to persist
-     */
-    public void persist(List<Browsenodes> browsenodeses){
-
-        try{
-            trx.begin();
-            for(Browsenodes row: browsenodeses){
-                em.persist(row);
-            }
-            trx.commit();
-            em.close();
-            emf.close();
-        } catch (ConstraintViolationException c) {
-            System.out.println("******************************************* Database error");
-            System.out.println(c.getConstraintViolations());
-            System.out.println("******************************************* Database error");
-            throw c;
-        }
-
-    }
-
-    /**
      * Persist a browsenodes object to database
      * @param browsenodes browsenodes object to persist
      */
@@ -104,8 +80,7 @@ public class BrowsenodesEntityManager {
      */
     public Browsenodes getBrowsenodes(String browsenodesId){
         try{
-            Browsenodes bn = (Browsenodes) em.createNamedQuery("Browsenodes.findByBrowseNodeId").setParameter("browseNodeId", browsenodesId).getSingleResult();
-            return bn;
+            return (Browsenodes) em.createNamedQuery("Browsenodes.findByBrowseNodeId").setParameter("browseNodeId", browsenodesId).getSingleResult();
         } catch (NoResultException e){
             return null;
         }

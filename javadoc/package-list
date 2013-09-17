@@ -1,2 +1,5 @@
 is.hgo2.reviewSearchHelper
 is.hgo2.reviewSearchHelper.amazonMessages
+is.hgo2.reviewSearchHelper.entities
+is.hgo2.reviewSearchHelper.entityManagers
+is.hgo2.reviewSearchHelper.util

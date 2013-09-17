@@ -34,7 +34,7 @@ public class BrowsenodesAsinEntityManager {
     /**
      * Creates the  insert object
      * @param asinNumber the amazon standard item number
-     * @return asin object with asin value and timestamp
+     * @return BrowsenodesAsin object with browsenodesAsin value and timestamp
      */
     public BrowsenodesAsin asin(String asinNumber, Asin asin, Browsenodes browsenodes, BinsearchResults bin){
         BrowsenodesAsin browsenodesAsin = new BrowsenodesAsin();

@@ -1,12 +1,12 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
-import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.entities.Excludedbrowsenodes;
 import is.hgo2.reviewSearchHelper.util.Constants;
 
-import javax.persistence.*;
-import javax.validation.ConstraintViolationException;
-import java.util.Date;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
 
 /**
  * This is a class to work with the excludedBrowseNodes entity object. Fetch data from it.
@@ -14,17 +14,14 @@ import java.util.Date;
  */
 public class ExcludedbrowsenodesEntityManager {
 
-    private EntityManagerFactory emf;
     private EntityManager em;
-    private EntityTransaction trx;
 
     /**
      * Constructor that initializes the entityManagerFactory, entityManager and EntityTransaction
      */
     public ExcludedbrowsenodesEntityManager(){
-        this.emf = Persistence.createEntityManagerFactory(Constants.PERSISTANCE_PROVIDER);
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Constants.PERSISTANCE_PROVIDER);
         this.em = emf.createEntityManager();
-        this.trx = em.getTransaction();
     }
 
     /**
@@ -34,8 +31,7 @@ public class ExcludedbrowsenodesEntityManager {
      */
     public Excludedbrowsenodes getExcludedBrowseNode(String browseNodeId){
         try{
-            Excludedbrowsenodes ebn = (Excludedbrowsenodes) em.createNamedQuery("Excludedbrowsenodes.findByBrowseNodeId").setParameter("browseNodeId", browseNodeId).getSingleResult();
-            return ebn;
+            return (Excludedbrowsenodes) em.createNamedQuery("Excludedbrowsenodes.findByBrowseNodeId").setParameter("browseNodeId", browseNodeId).getSingleResult();
         } catch (NoResultException e){
             return null;
         }

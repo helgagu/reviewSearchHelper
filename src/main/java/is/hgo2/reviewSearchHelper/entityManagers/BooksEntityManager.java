@@ -11,7 +11,6 @@ import javax.persistence.Persistence;
 import javax.validation.ConstraintViolationException;
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This is a class to work with the books entity object. Insert into the books table and fetch data from it.
@@ -84,16 +83,14 @@ public class BooksEntityManager {
     }
 
     /**
-     * Persist a list of books objects to database
-     * @param bookses list of books objects to persist
+     * Persist book object to database
+     * @param book book object to persist
      */
-    public void persist(List<Books> bookses){
+    public void persist(Books book){
 
         try{
             trx.begin();
-            for(Books row: bookses){
-                em.persist(row);
-            }
+            em.persist(book);
             trx.commit();
             em.close();
             emf.close();

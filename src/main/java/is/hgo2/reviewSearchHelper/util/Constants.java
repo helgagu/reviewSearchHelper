@@ -67,11 +67,12 @@ public class Constants {
     public static final String BOOKS_SEARCHINDEX_VALUE = "Books";
     public static final String POWER_SEARCH_VALUE = "keywords:%s and language:english";
 
-    /* Relevance rank info:
-       Items ranked according to the following criteria: how often the keyword appears in the description,
-       where the keyword appears (for example, the ranking is higher when keywords are found in titles),
-       how closely they occur in descriptions (if there are multiple keywords),
-       and how often customers purchased the products they found using the keyword.  {Amazon, 2011 #34}
+    /**
+     * Relevance rank info:
+     *Items ranked according to the following criteria: how often the keyword appears in the description,
+     *where the keyword appears (for example, the ranking is higher when keywords are found in titles),
+     *how closely they occur in descriptions (if there are multiple keywords),
+     *and how often customers purchased the products they found using the keyword.  {Amazon, 2011 #34}
      */
     public static final String RELEVANCERANK_SORT_VALUE = "relevancerank";
     public static final String SEARCHBINS_RESPONSEGROUP_PARAMETER = "SearchBins";

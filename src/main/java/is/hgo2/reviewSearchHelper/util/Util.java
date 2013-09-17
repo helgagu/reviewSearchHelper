@@ -1,10 +1,8 @@
 package is.hgo2.reviewSearchHelper.util;
 
 import com.sun.jersey.core.util.Base64;
-import is.hgo2.reviewSearchHelper.amazonMessages.Item;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemLookupResponse;
 import is.hgo2.reviewSearchHelper.amazonMessages.ItemSearchResponse;
-import is.hgo2.reviewSearchHelper.amazonMessages.Items;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,9 +27,6 @@ public class Util {
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
     static DateFormat dateStamp = new SimpleDateFormat("yyyyMMddHHmmss");
     private JaxbMessageConverter messageConverter;
-    private String amazonResponseFilename;
-
-    private SecretKeySpec secretKeySpec = null;
     private Mac mac = null;
 
     /**
@@ -40,9 +35,8 @@ public class Util {
      * @throws Exception
      */
     public Util() throws Exception{
-        byte[] secretyKeyBytes = AWSACCESS_SECRET.getBytes(UTF8_CHARSET);
-        secretKeySpec =
-                new SecretKeySpec(secretyKeyBytes, HMAC_SHA256_ALGORITHM);
+        byte[] secretKeyBytes = AWSACCESS_SECRET.getBytes(UTF8_CHARSET);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyBytes, HMAC_SHA256_ALGORITHM);
         mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
         mac.init(secretKeySpec);
         messageConverter = new JaxbMessageConverter();
@@ -77,7 +71,8 @@ public class Util {
 
         StringBuilder url = new StringBuilder();
         url.append(HTTP);
-        url.append(AMAZON_URI + endpoint);
+        url.append(AMAZON_URI);
+        url.append(endpoint);
         url.append(REQUEST_URI);
         url.append(ENDPOINT_SEPARATOR);
         url.append(canonicalQS);
@@ -96,7 +91,8 @@ public class Util {
         StringBuilder toSign = new StringBuilder();
         toSign.append(REQUEST_METHOD_GET);
         toSign.append(NEWLINE);
-        toSign.append(AMAZON_URI + endpoint);
+        toSign.append(AMAZON_URI);
+        toSign.append(endpoint);
         toSign.append(NEWLINE);
         toSign.append(REQUEST_URI);
         toSign.append(NEWLINE);
@@ -111,7 +107,7 @@ public class Util {
      * @return value for the signature parameter
      */
     private String calculateHmac(String stringToSign) {
-        String signature = null;
+        String signature;
         byte[] data;
         byte[] rawHmac;
         try {
@@ -133,7 +129,7 @@ public class Util {
      */
     private String canonicalize(Map<String, String> params){
         SortedMap<String, String> sortedParamMap =
-                new TreeMap<String, String>(params);
+                new TreeMap<>(params);
 
         if (sortedParamMap.isEmpty()) {
             return "";
@@ -175,62 +171,6 @@ public class Util {
     }
 
     /**
-     * To create a string with results formatted as: <p>
-     * key=value ; key=value ; etc.. <p>
-     * or with newline:<p>
-     * key=value ; <p>
-     * key=value ; <p>
-     *
-     * @param results hashmap of values to create a string (key = description; value = the result value)
-     * @param newline should append a newline between hashmap values
-     * @return string which can be printed in the console or in a text file
-     */
-    public String getFormattedResultString(Map<String, String> results, Boolean newline){
-
-        StringBuilder builder = new StringBuilder();
-        Iterator<Map.Entry<String, String>> iter =
-                results.entrySet().iterator();
-
-        while (iter.hasNext()) {
-            Map.Entry<String, String> kvpair = iter.next();
-            builder.append(kvpair.getKey());
-            builder.append("= ");
-            builder.append(kvpair.getValue());
-            builder.append(" ; ");
-            if(newline){
-                builder.append(NEWLINE);
-            }
-
-        }
-        return builder.toString();
-
-    }
-
-    /**
-     * To create a string with the total results and pages of an ItemSearch as well as a list of book titles
-     *
-     * @param itemSearchResponse the response object from an ItemSearch
-     */
-    public void getStringWithItemSearchResultsOnlyTitle(ItemSearchResponse itemSearchResponse) {
-        StringBuilder result = new StringBuilder();
-        for (Items items: itemSearchResponse.getItems()){
-
-            Map<String, String> itemsResults = new HashMap<>();
-            itemsResults.put("Total Results: ", items.getTotalResults().toString());
-            itemsResults.put("Total Pages: ", items.getTotalPages().toString());
-
-            for(Item item: items.getItem()){
-                Map<String, String> itemResults = new HashMap<>();
-                itemResults.put("Title: ", item.getItemAttributes().getTitle());
-                result.append(getFormattedResultString(itemResults, Boolean.TRUE));
-            }
-            result.append(getFormattedResultString(itemsResults, Boolean.TRUE));
-
-            System.out.println(result.toString());
-        }
-    }
-
-    /**
      * Insert the keyword to the power search parameter value.
      * Power search = keywords:%s and language:english
      *
@@ -243,39 +183,49 @@ public class Util {
 
     }
 
+    /**
+     * Writes an itemSearchResponse to a file
+     * @param response itemSearchResponse
+     * @throws Exception
+     */
     public void writeOriginalResponseToFile(ItemSearchResponse response) throws Exception{
 
         String filename =  AMAZON_RESPONSES_ITEMSEARCH_FILENAME + getDateTimeStamp();
-        setAmazonResponseFilename(filename);
         FileWriter responseFile = new FileWriter(filename);
         responseFile.write(messageConverter.getMessage(ItemSearchResponse.class, response));
         responseFile.flush();
         responseFile.close();
     }
 
+    /**
+     * Marshal the response to xml bytes to insert into database
+     * @param response itemSearchResponse
+     * @return byte[] response xml
+     * @throws Exception
+     */
     public byte[] unmarshalResponse(ItemSearchResponse response) throws Exception{
         String xml = messageConverter.getMessage(ItemSearchResponse.class, response);
         return xml.getBytes();
     }
 
+    /**
+     * Write itemLookupResponse to file
+     * @param response itemLookupResponse
+     * @throws Exception
+     */
     public void writeOriginalResponseToFile(ItemLookupResponse response) throws Exception{
 
         String filename =  AMAZON_RESPONSE_ITEMLOOKUP_FILENAME + getDateTimeStamp();
-        setAmazonResponseFilename(filename);
         FileWriter responseFile = new FileWriter(filename);
         responseFile.write(messageConverter.getMessage(ItemLookupResponse.class, response));
         responseFile.flush();
         responseFile.close();
     }
 
-    public String getAmazonResponseFilename() {
-        return amazonResponseFilename;
-    }
-
-    public void setAmazonResponseFilename(String amazonResponseFilename) {
-        this.amazonResponseFilename = amazonResponseFilename;
-    }
-
+    /**
+     * DateTimeStamp for filenames
+     * @return yyyyMMddHHMMss
+     */
     public String getDateTimeStamp(){
         return dateStamp.format(new Date());
     }

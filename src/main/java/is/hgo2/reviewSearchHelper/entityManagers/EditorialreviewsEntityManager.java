@@ -10,7 +10,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Class to work with the editorialreviews database objects, insert and fetch data
@@ -52,16 +51,14 @@ public class EditorialreviewsEntityManager {
     }
 
     /**
-     * Persist a list of editorialreview objects to database
-     * @param editorialreviewses list of editorialreview objects to persist
+     * Persist editorialreview object to database
+     * @param editorialreviews editorialreview object to persist
      */
-    public void persist(List<Editorialreviews> editorialreviewses){
+    public void persist(Editorialreviews editorialreviews){
 
         try{
             trx.begin();
-            for(Editorialreviews row: editorialreviewses){
-                em.persist(row);
-            }
+            em.persist(editorialreviews);
             trx.commit();
             em.close();
             emf.close();
