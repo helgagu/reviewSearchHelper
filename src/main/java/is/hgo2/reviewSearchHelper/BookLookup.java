@@ -89,7 +89,7 @@ public class BookLookup {
         BigInteger pages = BigInteger.ZERO;
         String publicationDate = "";
         String publisher = "";
-        String salesrank = "";
+        BigInteger salesrank = BigInteger.ZERO;
         String authors = "";
 
 
@@ -111,7 +111,9 @@ public class BookLookup {
                 pages = item.getItemAttributes().getNumberOfPages();
                 publicationDate = item.getItemAttributes().getPublicationDate();
                 publisher = item.getItemAttributes().getPublisher();
-                salesrank = item.getSalesRank();
+                if(item.getSalesRank() == null){
+                    salesrank = BigInteger.valueOf(Long.valueOf(item.getSalesRank()));
+                }
 
                 StringBuilder sbAuthors = new StringBuilder();
                 for(String author : item.getItemAttributes().getAuthor()){

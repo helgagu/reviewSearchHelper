@@ -60,7 +60,7 @@ public class BooksEntityManager {
                        BigInteger pages,
                        String publicationDate,
                        String publisher,
-                       String salesrank,
+                       BigInteger salesrank,
                        byte[] originalResponse,
                        String authors,
                        String endpoint){

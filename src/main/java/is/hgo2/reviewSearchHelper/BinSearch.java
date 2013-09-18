@@ -92,7 +92,7 @@ public class BinSearch {
                 parentBrowseNodeId = argument.getValue();
             }
         }
-        String exclusionReason = ExclusionCriteria.excludeBrowseNodeId(binName);
+        String exclusionReason = ExclusionCriteria.excludeBrowseNodeId(browseNodeId);
 
         Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, binsearchResults);
         browseNodesEm.persist(browsenodes);

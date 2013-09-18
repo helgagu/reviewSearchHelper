@@ -4,13 +4,28 @@
  */
 package is.hgo2.reviewSearchHelper.entities;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -57,7 +72,7 @@ public class Books implements Serializable {
     @Column(name = "pages")
     private BigInteger pages;
     @Column(name = "salesrank")
-    private String salesrank;
+    private BigInteger salesrank;
     @Column(name = "edition")
     private String edition;
     @Column(name = "manufacturer")
@@ -151,11 +166,11 @@ public class Books implements Serializable {
         this.pages = pages;
     }
 
-    public String getSalesrank() {
+    public BigInteger getSalesrank() {
         return salesrank;
     }
 
-    public void setSalesrank(String salesrank) {
+    public void setSalesrank(BigInteger salesrank) {
         this.salesrank = salesrank;
     }
 
