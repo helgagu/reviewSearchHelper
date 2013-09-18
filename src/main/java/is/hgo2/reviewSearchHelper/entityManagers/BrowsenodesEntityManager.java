@@ -7,6 +7,7 @@ import is.hgo2.reviewSearchHelper.util.Constants;
 import javax.persistence.*;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This is a class to work with the browsenodes database object, insert and fetch objects
@@ -78,12 +79,21 @@ public class BrowsenodesEntityManager {
      * @param browsenodesId browsenodesId
      * @return browsenodes object for the browsenodesId
      */
-    public Browsenodes getBrowsenodes(String browsenodesId){
+    public Browsenodes getBrowsenodes(String browsenodesId, int idBinSearchResults){
         try{
-            return (Browsenodes) em.createNamedQuery("Browsenodes.findByBrowseNodeId").setParameter("browseNodeId", browsenodesId).getSingleResult();
+            List<Browsenodes> browsenodeses = (List<Browsenodes>) em.createNamedQuery("Browsenodes.findByBrowseNodeId").setParameter("browseNodeId", browsenodesId).getResultList();
+            if(browsenodeses.size()==1){
+                return browsenodeses.get(0);
+            }
+            for(Browsenodes bn : browsenodeses){
+                if(bn.getIdbinsearchResults().getIdbinsearchResults() == idBinSearchResults-1){
+                    return bn;
+                }
+            }
         } catch (NoResultException e){
             return null;
         }
+        return null;
     }
 
 }

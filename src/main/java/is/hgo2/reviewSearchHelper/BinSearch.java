@@ -110,10 +110,13 @@ public class BinSearch {
         String searchParamBrowseNode = binsearchResults.getSearchParamsBrowseNodeId();
 
         BrowsenodesEntityManager browsenodesEm = new BrowsenodesEntityManager();
-        Browsenodes bn = browsenodesEm.getBrowsenodes(searchParamBrowseNode);
-
-        if(bn.getExclusionReason() == null){
-            setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, bn);
+        Browsenodes bn = browsenodesEm.getBrowsenodes(searchParamBrowseNode, binsearchResults.getIdbinsearchResults());
+        if(bn != null){
+            if(bn.getExclusionReason() == null){
+                setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, bn);
+            }
+        } else {
+            setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, null);
         }
     }
 
