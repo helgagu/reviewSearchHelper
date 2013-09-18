@@ -6,6 +6,7 @@ import is.hgo2.reviewSearchHelper.util.Constants;
 import javax.persistence.*;
 import javax.validation.ConstraintViolationException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This is a class to work with the asin entity object. Insert into the asin table and fetch data from it.
@@ -66,8 +67,19 @@ public class AsinEntityManager {
      */
     public Asin getAsin(String asinNumber){
         try{
-            Asin asin = (Asin) em.createNamedQuery("Asin.findByAsin").setParameter("asin", asinNumber).getSingleResult();
-            return asin;
+            return (Asin) em.createNamedQuery("Asin.findByAsin").setParameter("asin", asinNumber).getSingleResult();
+        } catch (NoResultException e){
+            return null;
+        }
+    }
+
+    /**
+     * Gets the whole list of ASIN in the database
+     * @return list of ASIN objects
+     */
+    public List<Asin> getAll(){
+        try{
+            return (List<Asin>) em.createNamedQuery("Asin.findAll").getResultList();
         } catch (NoResultException e){
             return null;
         }

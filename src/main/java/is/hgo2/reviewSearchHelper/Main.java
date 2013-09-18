@@ -33,5 +33,8 @@ public class Main {
         binSearch.getAllBrowseNodes("Efficient", Constants.ENDPOINT_US, null);
         binSearch.getAllBrowseNodes("Effective*", Constants.ENDPOINT_US, null);
 
+        BookLookup bookLookup = new BookLookup();
+        bookLookup.setAllBooks(Constants.ENDPOINT_US);
+
     }
 }

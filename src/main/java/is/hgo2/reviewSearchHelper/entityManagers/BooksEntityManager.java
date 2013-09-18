@@ -62,7 +62,8 @@ public class BooksEntityManager {
                        String publisher,
                        String salesrank,
                        byte[] originalResponse,
-                       String authors){
+                       String authors,
+                       String endpoint){
         Books books = new Books();
         books.setTimestamp(new Date());
         books.setOriginalResponse(originalResponse);
@@ -79,6 +80,7 @@ public class BooksEntityManager {
         books.setPublisher(publisher);
         books.setSalesrank(salesrank);
         books.setTitle(title);
+        books.setAmazonLocale(endpoint);
         return books;
     }
 

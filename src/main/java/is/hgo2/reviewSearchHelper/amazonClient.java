@@ -31,7 +31,7 @@ public class AmazonClient {
      * Initializer
      * @throws Exception
      */
-    public AmazonClient(Util util) throws Exception{
+    public AmazonClient(Util util) {
         this.httpClient = new HttpClient();
         this.util = util;
     }
@@ -46,7 +46,7 @@ public class AmazonClient {
      * @param operation which operation the request should execute e.g. ItemSearch, ItemLookup
      * @return Hashmap with the common mandatory parameters (key = parameter name; value = parameter value)
      */
-    public Map<String, String> createParameterMap(String operation){
+    private Map<String, String> createParameterMap(String operation){
 
         Map<String, String> params = new HashMap<>();
         params.put(AWSACCESSKEYID_PARAMETER, AWSACCESSKEYID_VALUE);
@@ -71,7 +71,7 @@ public class AmazonClient {
      * @param keyword the search keyword which replaces %s (see above), this is either Productivity, Personal Productivity, Efficient, Effective(ness) or knowledge worker productivity
      * @return Hashmap with the common mandatory parameters and the standard search request parameters (key = parameter name; value = parameter value)
      */
-    public Map<String, String> createStandardSearchRequest(String keyword){
+    private Map<String, String> createStandardSearchRequest(String keyword){
 
         Map<String, String> params = createParameterMap(ITEMSEARCH_OPERATION_VALUE);
         params.put(SEARCHINDEX_PARAMETER, BOOKS_SEARCHINDEX_VALUE);
@@ -89,7 +89,7 @@ public class AmazonClient {
      * @param ASIN amazon standard item number
      * @return Hashmap with the common mandatory parameters and the standard search request parameters (key = parameter name; value = parameter value)
      */
-    public Map<String, String> createStandardLookupRequest(String ASIN){
+    private Map<String, String> createStandardLookupRequest(String ASIN){
 
         Map<String, String> params = createParameterMap(ITEMLOOKUP_OPERATION_VALUE);
         params.put(RESPONSEGROUP_PARAMETER, MEDIUM_RESPONSEGROUP_PARAMETER);
@@ -98,19 +98,6 @@ public class AmazonClient {
 
     }
 
-    /**
-     * Creates the standard editorial lookup request by asin. The asin's are fetched from the search requests.
-     * @param ASIN amazon standard item number
-     * @return Hashmap with the common mandatory parameters and the standard search request parameters (key = parameter name; value = parameter value)
-     */
-    public Map<String, String> createEditorialLookupRequest(String ASIN){
-
-        Map<String, String> params = createParameterMap(ITEMLOOKUP_OPERATION_VALUE);
-        params.put(RESPONSEGROUP_PARAMETER, EDITORIALREVIEW_RESPONSEGROUP_PARAMETER);
-        params.put(ITEMID_PARAMETER, ASIN);
-        return params;
-
-    }
 
     /**
      * Creates a binSearch request using the standard search request with the addition of these parameters:  <p>
@@ -122,7 +109,7 @@ public class AmazonClient {
      * @param browseNodeId the id of a specific browseNode (bin)
      * @return Hashmap with the common mandatory parameters, the standard search parameters and the binSearch parameters (key = parameter name; value = parameter value)
      */
-    public Map<String, String> getBinSearchRequest(String keyword, String browseNodeId, String searchPageNumber){
+    private Map<String, String> getBinSearchRequest(String keyword, String browseNodeId, String searchPageNumber){
 
         Map<String, String> params = createStandardSearchRequest(keyword);
         params.put(RESPONSEGROUP_PARAMETER, SEARCHBINS_RESPONSEGROUP_PARAMETER);
@@ -164,25 +151,6 @@ public class AmazonClient {
     public ItemLookupResponse sendItemLookupRequest(String ASIN, String endpoint) throws Exception{
 
         Map<String, String> originalRequest = createStandardLookupRequest(ASIN);
-        String request = util.getRequest(originalRequest, endpoint);
-        System.out.println(request);
-        ClientResponse response = httpClient.sendGetRequest(request);
-        ItemLookupResponse itemLookupResponse = response.getEntity(ItemLookupResponse.class);
-        util.writeOriginalResponseToFile(itemLookupResponse);
-        return itemLookupResponse;
-
-    }
-
-    /**
-     * Sends an editorialLookup request to amazon
-     * @param ASIN amazon standard item number
-     * @param endpoint amazon locale, the ending of the url http://amazon. , e.g. com, co.uk etc...
-     * @return itemLookupResponse object
-     * @throws Exception
-     */
-    public ItemLookupResponse sendEditorialLookupResponse(String ASIN, String endpoint) throws Exception{
-
-        Map<String, String> originalRequest = createEditorialLookupRequest(ASIN);
         String request = util.getRequest(originalRequest, endpoint);
         System.out.println(request);
         ClientResponse response = httpClient.sendGetRequest(request);

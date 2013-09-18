@@ -209,6 +209,17 @@ public class Util {
     }
 
     /**
+     * Marshal the response to xml bytes to insert into database
+     * @param response itemSearchResponse
+     * @return byte[] response xml
+     * @throws Exception
+     */
+    public byte[] unmarshalResponse(ItemLookupResponse response) throws Exception{
+        String xml = messageConverter.getMessage(ItemLookupResponse.class, response);
+        return xml.getBytes();
+    }
+
+    /**
      * Write itemLookupResponse to file
      * @param response itemLookupResponse
      * @throws Exception

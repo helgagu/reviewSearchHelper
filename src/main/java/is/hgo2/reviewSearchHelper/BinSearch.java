@@ -15,6 +15,7 @@ import is.hgo2.reviewSearchHelper.util.Util;
 
 /**
  * Class for the binSearch, browseNodes and ASIN extraction from the Amazon Product Advertising API
+ * @author Helga Gudrun Oskarsdottir
  */
 public class BinSearch {
     private final Util util;
@@ -45,7 +46,7 @@ public class BinSearch {
      * @param response the response object of the ItemSearch with responseGroup = BinSearch
      * @param binsearchResults the saved binsearchResults object for this response.
      */
-    public void setBrowseNodeIds(ItemSearchResponse response, BinsearchResults binsearchResults) throws Exception{
+    private void setBrowseNodeIds(ItemSearchResponse response, BinsearchResults binsearchResults) throws Exception{
 
         for (Items items : response.getItems()) {
             for (SearchBinSet bin : items.getSearchBinSets().getSearchBinSet()) {
@@ -125,7 +126,7 @@ public class BinSearch {
      * @param browsenodes the browsenodes object of the response
      * @throws Exception
      */
-    public void setAllBrowseNodesAsin(String browseNodesId, BinsearchResults binsearchResults, Browsenodes browsenodes) throws Exception{
+    private void setAllBrowseNodesAsin(String browseNodesId, BinsearchResults binsearchResults, Browsenodes browsenodes) throws Exception{
 
         String keyword = binsearchResults.getKeyword();
         String endpoint = binsearchResults.getAmazonLocale();
@@ -194,7 +195,7 @@ public class BinSearch {
      * @param response the response to get the total pages for
      * @return totalpages as int
      */
-    public int getTotalPages(ItemSearchResponse response){
+    private int getTotalPages(ItemSearchResponse response){
 
         int totalpages = 0;
         for(Items item: response.getItems()){
@@ -209,7 +210,7 @@ public class BinSearch {
      * @param binItemCount the amount of result items in a specific bin
      * @return true=binItemCount is less than 100, false=binItemCount is equal or smaller than 100
      */
-    public Boolean resultsLessThanHundred(Long binItemCount) {
+    private Boolean resultsLessThanHundred(Long binItemCount) {
         if (binItemCount < 100) {
             //If binItemCount is greater than 100 return true. CompareTo returns 1 if greater than.
             return Boolean.TRUE;
@@ -248,7 +249,7 @@ public class BinSearch {
      * @param getBrowseNodes true=call method setBrowseNodeIds to get the browsenodes children, false = do not call the method, the binItemCount < 100 we do not need to narrow the search more.
      * @throws Exception
      */
-    public BinsearchResults setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
+    private BinsearchResults setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
 
         BinsearchResultsEntityManager bin = new BinsearchResultsEntityManager();
         Long totalResults = null;
