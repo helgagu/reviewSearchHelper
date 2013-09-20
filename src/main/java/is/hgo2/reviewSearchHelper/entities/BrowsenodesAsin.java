@@ -51,12 +51,12 @@ public class BrowsenodesAsin implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
+    @JoinColumn(name = "idchildBrowseNodesToSearch", referencedColumnName = "idchildBrowseNodesToSearch")
+    @ManyToOne(optional = false)
+    private Childbrowsenodestosearch idchildBrowseNodesToSearch;
     @JoinColumn(name = "binsearch_results_idbinsearch_results", referencedColumnName = "idbinsearch_results")
     @ManyToOne(optional = false)
     private BinsearchResults binsearchResultsIdbinsearchResults;
-    @JoinColumn(name = "idbrowsenodes", referencedColumnName = "idbrowsenodes")
-    @ManyToOne(optional = false)
-    private Browsenodes idbrowsenodes;
     @JoinColumn(name = "idasin", referencedColumnName = "idasin")
     @ManyToOne(optional = false)
     private Asin idasin;
@@ -106,20 +106,20 @@ public class BrowsenodesAsin implements Serializable {
         this.updatedTimestamp = updatedTimestamp;
     }
 
+    public Childbrowsenodestosearch getIdchildBrowseNodesToSearch() {
+        return idchildBrowseNodesToSearch;
+    }
+
+    public void setIdchildBrowseNodesToSearch(Childbrowsenodestosearch idchildBrowseNodesToSearch) {
+        this.idchildBrowseNodesToSearch = idchildBrowseNodesToSearch;
+    }
+
     public BinsearchResults getBinsearchResultsIdbinsearchResults() {
         return binsearchResultsIdbinsearchResults;
     }
 
     public void setBinsearchResultsIdbinsearchResults(BinsearchResults binsearchResultsIdbinsearchResults) {
         this.binsearchResultsIdbinsearchResults = binsearchResultsIdbinsearchResults;
-    }
-
-    public Browsenodes getIdbrowsenodes() {
-        return idbrowsenodes;
-    }
-
-    public void setIdbrowsenodes(Browsenodes idbrowsenodes) {
-        this.idbrowsenodes = idbrowsenodes;
     }
 
     public Asin getIdasin() {

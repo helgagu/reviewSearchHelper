@@ -1,14 +1,8 @@
 package is.hgo2.reviewSearchHelper;
 
 import is.hgo2.reviewSearchHelper.amazonMessages.*;
-import is.hgo2.reviewSearchHelper.entities.Asin;
-import is.hgo2.reviewSearchHelper.entities.BinsearchResults;
-import is.hgo2.reviewSearchHelper.entities.Browsenodes;
-import is.hgo2.reviewSearchHelper.entities.BrowsenodesAsin;
-import is.hgo2.reviewSearchHelper.entityManagers.AsinEntityManager;
-import is.hgo2.reviewSearchHelper.entityManagers.BinsearchResultsEntityManager;
-import is.hgo2.reviewSearchHelper.entityManagers.BrowsenodesAsinEntityManager;
-import is.hgo2.reviewSearchHelper.entityManagers.BrowsenodesEntityManager;
+import is.hgo2.reviewSearchHelper.entities.*;
+import is.hgo2.reviewSearchHelper.entityManagers.*;
 import is.hgo2.reviewSearchHelper.util.Constants;
 import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
 import is.hgo2.reviewSearchHelper.util.Util;
@@ -51,7 +45,7 @@ public class BinSearch {
         for (Items items : response.getItems()) {
             for (SearchBinSet bin : items.getSearchBinSets().getSearchBinSet()) {
                 if(bin.getBin().size() == 0){
-                    setAllBrowseNodesAsinForNoChildBrowseNodes(binsearchResults);
+                   setChildbrowsenodetosearchForNoChildBrowseNode(binsearchResults);
                 }
 
                 for (Bin binDetails : bin.getBin()) {
@@ -59,7 +53,7 @@ public class BinSearch {
 
                     if(resultsLessThanHundred(browsenodes.getBinItemCount())){
                         if(browsenodes.getExclusionReason() == null){
-                          setAllBrowseNodesAsin(browsenodes.getBrowseNodeId(), binsearchResults, browsenodes);
+                          setChildbrowsenodetosearch(binsearchResults, browsenodes);
                         }
                     } else{
                         getAllBrowseNodes(binsearchResults.getKeyword(), binsearchResults.getAmazonLocale(), browsenodes.getBrowseNodeId());
@@ -67,6 +61,24 @@ public class BinSearch {
                 }
             }
         }
+    }
+
+    private void setChildbrowsenodetosearch(BinsearchResults bin, Browsenodes bn){
+
+        ChildbrowsenodestosearchEntityManager em = new ChildbrowsenodestosearchEntityManager();
+        if(!hasBeenMarked(bn.getBrowseNodeId(), bin.getKeyword(), bin.getAmazonLocale())){
+            em.persist(em.childbrowsenodestosearch(bn.getBinItemCount(), bn.getBinName(), bn.getBrowseNodeId(), bn.getParentBrowseNode(), bin.getAmazonLocale(), bin.getKeyword(), bn));
+        }
+    }
+
+    private Boolean hasBeenMarked(String browsenodeId, String keyword, String endpoint){
+        ChildbrowsenodestosearchEntityManager em = new ChildbrowsenodestosearchEntityManager();
+        Childbrowsenodestosearch item = em.getChildbrowsenodestosearch(browsenodeId, keyword, endpoint);
+        if(item != null){
+            System.out.println("Item already exists in childbrowsenodestosearch");
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     /**
@@ -106,17 +118,19 @@ public class BinSearch {
      * @param binsearchResults the binsearch_results object saved in the database for the response
      * @throws Exception
      */
-    private void setAllBrowseNodesAsinForNoChildBrowseNodes(BinsearchResults binsearchResults) throws Exception {
+    private void setChildbrowsenodetosearchForNoChildBrowseNode(BinsearchResults binsearchResults) throws Exception {
         String searchParamBrowseNode = binsearchResults.getSearchParamsBrowseNodeId();
 
         BrowsenodesEntityManager browsenodesEm = new BrowsenodesEntityManager();
         Browsenodes bn = browsenodesEm.getBrowsenodes(searchParamBrowseNode, binsearchResults.getIdbinsearchResults());
         if(bn != null){
             if(bn.getExclusionReason() == null){
-                setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, bn);
+                setChildbrowsenodetosearch(binsearchResults, bn);
             }
         } else {
-            setAllBrowseNodesAsin(searchParamBrowseNode, binsearchResults, null);
+            Browsenodes bnNull = browsenodesEm.browsenodes(null, "CannotFindBrowseNodeObject", searchParamBrowseNode, null, null, binsearchResults);
+            browsenodesEm.persist(bnNull);
+            setChildbrowsenodetosearch(binsearchResults, bnNull);
         }
     }
 
@@ -160,7 +174,7 @@ public class BinSearch {
     private ItemSearchResponse getBrowseNodeAsins(String browseNodesId, Browsenodes browsenodes, String keyword, String endpoint, String page) throws Exception {
         ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, browseNodesId, page, endpoint);
         BinsearchResults bin = setBinSearchResults(response, keyword, endpoint, Boolean.FALSE);
-        setBrowseNodeAsin(browsenodes, response, bin);
+        setBrowseNodeAsin(browsenodes, response, bin, endpoint);
         return response;
     }
 
@@ -172,10 +186,11 @@ public class BinSearch {
      * @param response the search response
      * @param bin the binsearch_results object for the search request
      */
-    private void setBrowseNodeAsin(Browsenodes browsenodes, ItemSearchResponse response, BinsearchResults bin) {
+    private void setBrowseNodeAsin(Browsenodes browsenodes, ItemSearchResponse response, BinsearchResults bin, String endpoint) throws Exception{
 
         String asinNumber;
         Asin asin;
+        BookLookup bookLookup = new BookLookup();
         for(Items items : response.getItems()){
             for(Item item : items.getItem()){
                 BrowsenodesAsinEntityManager browsenodesAsinEm = new BrowsenodesAsinEntityManager();
@@ -186,9 +201,11 @@ public class BinSearch {
                 if(asin == null){
                     asin = asinEm.asin(asinNumber);
                     asinEm.persist(asin);
+                    bookLookup.setBookDetail(endpoint, asin);
                 }
                 BrowsenodesAsin browsenodesAsin = browsenodesAsinEm.asin(asinNumber, asin, browsenodes, bin);
                 browsenodesAsinEm.persist(browsenodesAsin);
+
             }
         }
     }

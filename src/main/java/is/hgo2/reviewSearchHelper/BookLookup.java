@@ -37,17 +37,12 @@ public class BookLookup {
      * @param endpoint the amazon locale e.g. com, co.uk
      * @throws Exception
      */
-    public void setAllBooks(String endpoint) throws Exception{
-        AsinEntityManager aem = new AsinEntityManager();
-        List<Asin> asins = aem.getAll();
+    public void setBookDetail(String endpoint, Asin asin) throws Exception{
+        ItemLookupResponse response = client.sendItemLookupRequest(asin.getAsin(), endpoint);
 
-        for(Asin asin: asins){
-            ItemLookupResponse response = client.sendItemLookupRequest(asin.getAsin(), endpoint);
+        Books book = setBook(response, asin, endpoint);
+        setEditorialReviews(book, response);
 
-            Books book = setBook(response, asin, endpoint);
-            setEditorialReviews(book, response);
-
-        }
 
     }
 
@@ -58,12 +53,14 @@ public class BookLookup {
      * @throws Exception
      */
     private void setEditorialReviews(Books book, ItemLookupResponse response) throws Exception{
-        EditorialreviewsEntityManager erem = new EditorialreviewsEntityManager();
 
         for(Items items : response.getItems()){
             for(Item item : items.getItem()){
-                for(EditorialReview editorialItem : item.getEditorialReviews().getEditorialReview()){
-                      erem.persist(erem.editorialreviews(editorialItem.getContent().getBytes(), book, util.unmarshalResponse(response), editorialItem.getSource()));
+                if(item.getEditorialReviews() != null){
+                    for(EditorialReview editorialItem : item.getEditorialReviews().getEditorialReview()){
+                        EditorialreviewsEntityManager erem = new EditorialreviewsEntityManager();
+                        erem.persist(erem.editorialreviews(editorialItem.getContent().getBytes(), book, util.unmarshalResponse(response), editorialItem.getSource()));
+                    }
                 }
             }
         }
@@ -111,7 +108,7 @@ public class BookLookup {
                 pages = item.getItemAttributes().getNumberOfPages();
                 publicationDate = item.getItemAttributes().getPublicationDate();
                 publisher = item.getItemAttributes().getPublisher();
-                if(item.getSalesRank() == null){
+                if(item.getSalesRank() != null){
                     salesrank = BigInteger.valueOf(Long.valueOf(item.getSalesRank()));
                 }
 

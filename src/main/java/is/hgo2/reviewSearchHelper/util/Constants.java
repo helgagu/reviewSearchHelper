@@ -84,6 +84,8 @@ public class Constants {
     public static final String MERCHANTID_VALUE = "Amazon";
 
     public static final String PERSISTANCE_PROVIDER = "reviewSearchHelperEntityPU";
+
+    public static final int  RESULTS_FETCHED = 1;
 }
 
 

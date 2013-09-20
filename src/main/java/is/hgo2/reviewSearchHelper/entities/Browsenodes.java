@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -69,8 +68,8 @@ public class Browsenodes implements Serializable {
     @Column(name = "UpdatedTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTimestamp;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idbrowsenodes")
-    private Collection<BrowsenodesAsin> browsenodesAsinCollection;
+    @OneToMany(mappedBy = "idbrowsenodes")
+    private Collection<Childbrowsenodestosearch> childbrowsenodestosearchCollection;
     @JoinColumn(name = "idbinsearch_results", referencedColumnName = "idbinsearch_results")
     @ManyToOne(optional = false)
     private BinsearchResults idbinsearchResults;
@@ -155,12 +154,12 @@ public class Browsenodes implements Serializable {
     }
 
     @XmlTransient
-    public Collection<BrowsenodesAsin> getBrowsenodesAsinCollection() {
-        return browsenodesAsinCollection;
+    public Collection<Childbrowsenodestosearch> getChildbrowsenodestosearchCollection() {
+        return childbrowsenodestosearchCollection;
     }
 
-    public void setBrowsenodesAsinCollection(Collection<BrowsenodesAsin> browsenodesAsinCollection) {
-        this.browsenodesAsinCollection = browsenodesAsinCollection;
+    public void setChildbrowsenodestosearchCollection(Collection<Childbrowsenodestosearch> childbrowsenodestosearchCollection) {
+        this.childbrowsenodestosearchCollection = childbrowsenodestosearchCollection;
     }
 
     public BinsearchResults getIdbinsearchResults() {
