@@ -7,6 +7,8 @@ import is.hgo2.reviewSearchHelper.util.Constants;
 import is.hgo2.reviewSearchHelper.util.ExclusionCriteria;
 import is.hgo2.reviewSearchHelper.util.Util;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Class for the binSearch, browseNodes and ASIN extraction from the Amazon Product Advertising API
  * @author Helga Gudrun Oskarsdottir
@@ -135,96 +137,6 @@ public class BinSearch {
     }
 
     /**
-     * Gets all the ASIN from the browseNodes responses, result pages 1-10, and saves into databasetable browsenodesAsin
-     * and database table asin (if it doesn't exist there already).
-     * The amazon product advertising api only allows fetching of the first 100 results.
-     * @param browseNodesId the browsenodesId needed as a search parameter
-     * @param binsearchResults the binsearchResults for the resposne
-     * @param browsenodes the browsenodes object of the response
-     * @throws Exception
-     */
-    private void setAllBrowseNodesAsin(String browseNodesId, BinsearchResults binsearchResults, Browsenodes browsenodes) throws Exception{
-
-        String keyword = binsearchResults.getKeyword();
-        String endpoint = binsearchResults.getAmazonLocale();
-
-        ItemSearchResponse response = getBrowseNodeAsins(browseNodesId, browsenodes, keyword, endpoint, null);
-
-        for(int i=1; i < getTotalPages(response); i++){
-
-            if(i > 10){
-                break; //Amazon only allows fetching results from the first 10 pages.
-            }
-            getBrowseNodeAsins(browseNodesId, browsenodes, keyword, endpoint, String.valueOf(i));
-
-        }
-    }
-
-    /**
-     * Sends a search request for each result page for a specific browsenodeId. This inserts each search response in binSearch_results
-     * and extracts the aain to insert into browseNodesAsin
-     * @param browseNodesId the browsenodesId to use as a search parameter
-     * @param browsenodes the browsenodes object of the response
-     * @param keyword the search keyword
-     * @param endpoint the search endpoint
-     * @param page the result page number
-     * @return ItemSearchResponse
-     * @throws Exception
-     */
-    private ItemSearchResponse getBrowseNodeAsins(String browseNodesId, Browsenodes browsenodes, String keyword, String endpoint, String page) throws Exception {
-        ItemSearchResponse response = amazonClient.sendBinSearchRequest(keyword, browseNodesId, page, endpoint);
-        BinsearchResults bin = setBinSearchResults(response, keyword, endpoint, Boolean.FALSE);
-        setBrowseNodeAsin(browsenodes, response, bin, endpoint);
-        return response;
-    }
-
-    /**
-     * Inserts into the database tables, browseNodesAsin and ASIN.
-     *  - ASIN is a table for a list of unique ASIN's
-     *  - browseNodesAsin is a table for all the ASIN's per browseNodes search
-     * @param browsenodes browsenodes object which the ASINs are being extracted from
-     * @param response the search response
-     * @param bin the binsearch_results object for the search request
-     */
-    private void setBrowseNodeAsin(Browsenodes browsenodes, ItemSearchResponse response, BinsearchResults bin, String endpoint) throws Exception{
-
-        String asinNumber;
-        Asin asin;
-        BookLookup bookLookup = new BookLookup();
-        for(Items items : response.getItems()){
-            for(Item item : items.getItem()){
-                BrowsenodesAsinEntityManager browsenodesAsinEm = new BrowsenodesAsinEntityManager();
-                AsinEntityManager asinEm = new AsinEntityManager();
-
-                asinNumber = item.getASIN();
-                asin = asinEm.getAsin(asinNumber);
-                if(asin == null){
-                    asin = asinEm.asin(asinNumber);
-                    asinEm.persist(asin);
-                    bookLookup.setBookDetail(endpoint, asin);
-                }
-                BrowsenodesAsin browsenodesAsin = browsenodesAsinEm.asin(asinNumber, asin, browsenodes, bin);
-                browsenodesAsinEm.persist(browsenodesAsin);
-
-            }
-        }
-    }
-
-    /**
-     * Gets the totalpages value for a specific search response
-     * @param response the response to get the total pages for
-     * @return totalpages as int
-     */
-    private int getTotalPages(ItemSearchResponse response){
-
-        int totalpages = 0;
-        for(Items item: response.getItems()){
-             totalpages = item.getTotalPages().intValue();
-        }
-        return totalpages;
-    }
-
-    /**
      * Compares the binItemCount to see if it is less than 100.
      *
      * @param binItemCount the amount of result items in a specific bin
@@ -269,7 +181,7 @@ public class BinSearch {
      * @param getBrowseNodes true=call method setBrowseNodeIds to get the browsenodes children, false = do not call the method, the binItemCount < 100 we do not need to narrow the search more.
      * @throws Exception
      */
-    private BinsearchResults setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
+    public BinsearchResults setBinSearchResults(ItemSearchResponse response, String keyword, String endpoint, Boolean getBrowseNodes) throws Exception{
 
         BinsearchResultsEntityManager bin = new BinsearchResultsEntityManager();
         Long totalResults = null;
@@ -332,4 +244,45 @@ public class BinSearch {
         binsearchresults = bin.addSearchParamsBinsearchResults(binsearchresults, availability, browseNodeId, merchantId, powerSearch, responseGroup, searchIndex, sort, itemPage, timestamp);
         return binsearchresults;
     }
+
+    /**
+     * Main method - used to run the binsearch for the reviewSearchHelper.
+     *
+     * The reviewSearchHelper: <p>
+     *     - Inserts data from Amazon Product Advertising API into the reviewSearchResults database  <p>
+     *     - Does searches for these keywords (%s in power search below) = Productivity, Personal Productivity, Knowledge Worker Productivity, Efficient and Effective* <p> <p>
+     *     - Standard search parameters are:  <p>
+     *          SearchIndex = Books <p>
+     *          Power search parameters=keywords:%s and language:english  <p>
+     *          Sort = relevancerank, sorted by how often and where the keyword appears, how closely multiple keywords occur in descriptions and how often customers purchased the products they found using the keyword {Amazon 2011}. <p>
+     *          MerchantId = Amazon, only look at available books that are sold by Amazon - excludes books sold by third party sellers <p>
+     *          Availability = available, excludes unavailable books   <p> <p>
+     *
+     *     - Exclusion criteria on the browsenode book categories are applied. The name of every book category in the pilot search was read through and a decision made if they should be excluded.
+     *     - Amazon Product Advertising API does not support Kindle books, so the search is also restricted to other bindings. So Kindle only books are not in scope.
+     *     - The browse nodes (categories) that results should be extracted from are saved in table childbrowsenodestosearch table. The results are extracted in class extractAsin
+     *
+     * @param  args string array of arguments - arg[0] = search keyword
+     */
+    public void main(String [] args) throws Exception{
+
+            SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String start = "Start datetime: " + fm.format(System.currentTimeMillis());
+            long startTime = System.currentTimeMillis();
+            System.out.println(start);
+
+            BinSearch binSearch = new BinSearch();
+            binSearch.getAllBrowseNodes(args[0], Constants.ENDPOINT_US, null);
+            String kwProductivityFinished = args[0] + " keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+            System.out.println(kwProductivityFinished);
+
+
+            long endTime = System.currentTimeMillis();
+            System.out.println("DateTime of Search");
+            System.out.println(start);
+            System.out.println(kwProductivityFinished);
+            long total = endTime - startTime;
+            System.out.println("Total time" + total);
+
+        }
 }

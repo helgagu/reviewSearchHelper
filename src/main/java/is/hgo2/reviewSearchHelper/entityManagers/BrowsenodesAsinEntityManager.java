@@ -1,9 +1,6 @@
 package is.hgo2.reviewSearchHelper.entityManagers;
 
-import is.hgo2.reviewSearchHelper.entities.Asin;
-import is.hgo2.reviewSearchHelper.entities.BinsearchResults;
-import is.hgo2.reviewSearchHelper.entities.Browsenodes;
-import is.hgo2.reviewSearchHelper.entities.BrowsenodesAsin;
+import is.hgo2.reviewSearchHelper.entities.*;
 import is.hgo2.reviewSearchHelper.util.Constants;
 
 import javax.persistence.EntityManager;
@@ -36,13 +33,13 @@ public class BrowsenodesAsinEntityManager {
      * @param asinNumber the amazon standard item number
      * @return BrowsenodesAsin object with browsenodesAsin value and timestamp
      */
-    public BrowsenodesAsin asin(String asinNumber, Asin asin, Browsenodes browsenodes, BinsearchResults bin){
+    public BrowsenodesAsin asin(String asinNumber, Asin asin, Childbrowsenodestosearch browsenodes, BinsearchResults bin){
         BrowsenodesAsin browsenodesAsin = new BrowsenodesAsin();
         browsenodesAsin.setAsin(asinNumber);
         browsenodesAsin.setTimestamp(new Date());
         browsenodesAsin.setIdasin(asin);
         browsenodesAsin.setBinsearchResultsIdbinsearchResults(bin);
-        browsenodesAsin.setIdbrowsenodes(browsenodes);
+        browsenodesAsin.setIdchildBrowseNodesToSearch(browsenodes);
         return browsenodesAsin;
     }
 
