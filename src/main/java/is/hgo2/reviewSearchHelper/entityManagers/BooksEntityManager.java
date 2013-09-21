@@ -4,10 +4,7 @@ import is.hgo2.reviewSearchHelper.entities.Asin;
 import is.hgo2.reviewSearchHelper.entities.Books;
 import is.hgo2.reviewSearchHelper.util.Constants;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import javax.validation.ConstraintViolationException;
 import java.math.BigInteger;
 import java.util.Date;
@@ -103,5 +100,18 @@ public class BooksEntityManager {
             throw c;
         }
 
+    }
+
+    /**
+     * Get books object from database by the field books
+     * @param asinNumber amazon standard item number
+     * @return books object for the asinNumber
+     */
+    public Books getBooks(String asinNumber){
+        try{
+            return (Books) em.createNamedQuery("Books.findByAsin").setParameter("asin", asinNumber).getSingleResult();
+        } catch (NoResultException e){
+            return null;
+        }
     }
 }

@@ -38,9 +38,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Browsenodes.findByBinItemCount", query = "SELECT b FROM Browsenodes b WHERE b.binItemCount = :binItemCount"),
     @NamedQuery(name = "Browsenodes.findByBrowseNodeId", query = "SELECT b FROM Browsenodes b WHERE b.browseNodeId = :browseNodeId"),
     @NamedQuery(name = "Browsenodes.findByParentBrowseNode", query = "SELECT b FROM Browsenodes b WHERE b.parentBrowseNode = :parentBrowseNode"),
+    @NamedQuery(name = "Browsenodes.findByKeyword", query = "SELECT b FROM Browsenodes b WHERE b.keyword = :keyword"),
     @NamedQuery(name = "Browsenodes.findByExclusionReason", query = "SELECT b FROM Browsenodes b WHERE b.exclusionReason = :exclusionReason"),
     @NamedQuery(name = "Browsenodes.findByTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.timestamp = :timestamp"),
     @NamedQuery(name = "Browsenodes.findByUpdatedTimestamp", query = "SELECT b FROM Browsenodes b WHERE b.updatedTimestamp = :updatedTimestamp")})
+    @NamedQuery(name = "Browsenodes.findByBrowseNodeIdKeyword", query = "SELECT b FROM Browsenodes b WHERE b.browseNodeId = :browseNodeId and b.keyword = :keyword")
 public class Browsenodes implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,6 +61,9 @@ public class Browsenodes implements Serializable {
     private String browseNodeId;
     @Column(name = "parentBrowseNode")
     private String parentBrowseNode;
+    @Basic(optional = false)
+    @Column(name = "keyword")
+    private String keyword;
     @Column(name = "exclusionReason")
     private String exclusionReason;
     @Basic(optional = false)
@@ -81,11 +86,12 @@ public class Browsenodes implements Serializable {
         this.idbrowsenodes = idbrowsenodes;
     }
 
-    public Browsenodes(Integer idbrowsenodes, String binName, long binItemCount, String browseNodeId, Date timestamp) {
+    public Browsenodes(Integer idbrowsenodes, String binName, long binItemCount, String browseNodeId, String keyword, Date timestamp) {
         this.idbrowsenodes = idbrowsenodes;
         this.binName = binName;
         this.binItemCount = binItemCount;
         this.browseNodeId = browseNodeId;
+        this.keyword = keyword;
         this.timestamp = timestamp;
     }
 
@@ -127,6 +133,14 @@ public class Browsenodes implements Serializable {
 
     public void setParentBrowseNode(String parentBrowseNode) {
         this.parentBrowseNode = parentBrowseNode;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getExclusionReason() {

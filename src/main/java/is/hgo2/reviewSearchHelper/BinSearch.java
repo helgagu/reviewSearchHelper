@@ -31,13 +31,12 @@ public class BinSearch {
      * This fetches all the browseNodesIds in a bin list returned by an ItemSearch with responseGroup = BinSearch
      * if the binItemCount is more than 100 and needs to be narrowed more. <p><p>
      * <p/>
-     * If there are no more browseNode children or if the binItemCount is less than 100, then the first 100 ASIN is extracted (amazon standard item number)
-     * from the result set. Amazon Product Advertising API does not allow fetching more results than that.
+     * If there are no more browseNode children or if the binItemCount is less than 100, then the browse node is marked as to be searched by inserting into childbrowsenodestosearch.
+     *
      *
      * After this method these database tables have been filled with data <p>
      *     - browsenodes <p>
-     *     - browsenodesAsin <p>
-     *     - asin <p>
+     *     - childbrowsenodestoSearch
      *
      * @param response the response object of the ItemSearch with responseGroup = BinSearch
      * @param binsearchResults the saved binsearchResults object for this response.
@@ -51,7 +50,8 @@ public class BinSearch {
                 }
 
                 for (Bin binDetails : bin.getBin()) {
-                    Browsenodes browsenodes = setBrowsenode(response, binsearchResults, binDetails);
+
+                    Browsenodes browsenodes = setBrowsenode(binsearchResults, binDetails);
 
                     if(resultsLessThanHundred(browsenodes.getBinItemCount())){
                         if(browsenodes.getExclusionReason() == null){
@@ -85,32 +85,34 @@ public class BinSearch {
 
     /**
      * Inserts into the browsenodes database table.
-     * @param response the itemSearchResponse from amazon
      * @param binsearchResults the object from the database table binsearch_results for the response
      * @param binDetails the bin from the itemSearchResponse to be saved in browsenodes
      * @return browsenodes object that has been saved in the database
      */
-    private Browsenodes setBrowsenode(ItemSearchResponse response, BinsearchResults binsearchResults, Bin binDetails) {
+    private Browsenodes setBrowsenode(BinsearchResults binsearchResults, Bin binDetails) {
         BrowsenodesEntityManager browseNodesEm = new BrowsenodesEntityManager();
 
         Long binItemCount = binDetails.getBinItemCount().longValue();
         String binName = binDetails.getBinName();
         String browseNodeId = "";
-        String parentBrowseNodeId = "";
+        String parentBrowseNodeId = binsearchResults.getSearchParamsBrowseNodeId();
+        String keyword = binsearchResults.getKeyword();
 
         for (Bin.BinParameter param : binDetails.getBinParameter()) {
             browseNodeId = param.getValue();
         }
-        for(Arguments.Argument argument: response.getOperationRequest().getArguments().getArgument()){
-            if (argument.getName().equalsIgnoreCase(Constants.BROWSENODE_PARAMETER)) {
-                parentBrowseNodeId = argument.getValue();
-            }
-        }
+
         String exclusionReason = ExclusionCriteria.excludeBrowseNodeId(browseNodeId);
 
-        Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, binsearchResults);
-        browseNodesEm.persist(browsenodes);
-        return browsenodes;
+        Browsenodes existsAlready = browseNodesEm.getBrowseNode(browseNodeId, keyword);
+        if(existsAlready == null){
+            Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, binsearchResults);
+            browseNodesEm.persist(browsenodes);
+            return browsenodes;
+        }else{
+            return existsAlready;
+        }
+
     }
 
     /**
@@ -124,7 +126,7 @@ public class BinSearch {
         String searchParamBrowseNode = binsearchResults.getSearchParamsBrowseNodeId();
 
         BrowsenodesEntityManager browsenodesEm = new BrowsenodesEntityManager();
-        Browsenodes bn = browsenodesEm.getBrowsenodes(searchParamBrowseNode, binsearchResults.getIdbinsearchResults());
+        Browsenodes bn = browsenodesEm.getBrowseNode(searchParamBrowseNode, binsearchResults.getKeyword());
         if(bn != null){
             if(bn.getExclusionReason() == null){
                 setChildbrowsenodetosearch(binsearchResults, bn);
@@ -264,7 +266,7 @@ public class BinSearch {
      *
      * @param  args string array of arguments - arg[0] = search keyword
      */
-    public void main(String [] args) throws Exception{
+    public static void main(String [] args) throws Exception{
 
             SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String start = "Start datetime: " + fm.format(System.currentTimeMillis());

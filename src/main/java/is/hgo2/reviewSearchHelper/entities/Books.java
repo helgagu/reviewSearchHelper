@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Books.findAll", query = "SELECT b FROM Books b"),
     @NamedQuery(name = "Books.findByIdbooks", query = "SELECT b FROM Books b WHERE b.idbooks = :idbooks"),
+    @NamedQuery(name = "Books.findByAsin", query = "SELECT b FROM Books b WHERE b.asin = :asin"),
     @NamedQuery(name = "Books.findByIsbn", query = "SELECT b FROM Books b WHERE b.isbn = :isbn"),
     @NamedQuery(name = "Books.findByTitle", query = "SELECT b FROM Books b WHERE b.title = :title"),
     @NamedQuery(name = "Books.findByAuthors", query = "SELECT b FROM Books b WHERE b.authors = :authors"),
@@ -60,6 +61,9 @@ public class Books implements Serializable {
     @Basic(optional = false)
     @Column(name = "idbooks")
     private Integer idbooks;
+    @Basic(optional = false)
+    @Column(name = "asin")
+    private String asin;
     @Basic(optional = false)
     @Column(name = "isbn")
     private String isbn;
@@ -116,8 +120,9 @@ public class Books implements Serializable {
         this.idbooks = idbooks;
     }
 
-    public Books(Integer idbooks, String isbn, String title, String authors, String amazonLocale, byte[] originalResponse, Date timestamp) {
+    public Books(Integer idbooks, String asin, String isbn, String title, String authors, String amazonLocale, byte[] originalResponse, Date timestamp) {
         this.idbooks = idbooks;
+        this.asin = asin;
         this.isbn = isbn;
         this.title = title;
         this.authors = authors;
@@ -132,6 +137,14 @@ public class Books implements Serializable {
 
     public void setIdbooks(Integer idbooks) {
         this.idbooks = idbooks;
+    }
+
+    public String getAsin() {
+        return asin;
+    }
+
+    public void setAsin(String asin) {
+        this.asin = asin;
     }
 
     public String getIsbn() {

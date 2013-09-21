@@ -75,25 +75,21 @@ public class BrowsenodesEntityManager {
     }
 
     /**
-     * Get browsenodes object from database by the field browsenodesId
+     * Get Browsenodes object from database by the field browsenodesId and binItemCount
      * @param browsenodesId browsenodesId
-     * @return browsenodes object for the browsenodesId
+     * @param keyword the keyword used in the search
+     * @return Childbrowsenodestosearch object for the browsenodesId, keyword and endpoint
      */
-    public Browsenodes getBrowsenodes(String browsenodesId, int idBinSearchResults){
+    public Browsenodes getBrowseNode(String browsenodesId, String keyword){
         try{
-            List<Browsenodes> browsenodeses = (List<Browsenodes>) em.createNamedQuery("Browsenodes.findByBrowseNodeId").setParameter("browseNodeId", browsenodesId).getResultList();
-            if(browsenodeses.size()==1){
-                return browsenodeses.get(0);
-            }
-            for(Browsenodes bn : browsenodeses){
-                if(bn.getIdbinsearchResults().getIdbinsearchResults() == idBinSearchResults-1){
-                    return bn;
-                }
-            }
+            Browsenodes item = (Browsenodes) em.createNamedQuery("Browsenodes.findByBrowseNodeIdKeyword")
+                    .setParameter("browseNodeId", browsenodesId)
+                    .setParameter("keyword", keyword).getSingleResult();
+            return item;
         } catch (NoResultException e){
             return null;
         }
-        return null;
     }
+
 
 }

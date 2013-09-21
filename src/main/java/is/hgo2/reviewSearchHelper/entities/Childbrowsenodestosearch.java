@@ -44,7 +44,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Childbrowsenodestosearch.findByEndpoint", query = "SELECT c FROM Childbrowsenodestosearch c WHERE c.endpoint = :endpoint"),
     @NamedQuery(name = "Childbrowsenodestosearch.findByResultsFetched", query = "SELECT c FROM Childbrowsenodestosearch c WHERE c.resultsFetched = :resultsFetched"),
     @NamedQuery(name = "Childbrowsenodestosearch.findByTimestamp", query = "SELECT c FROM Childbrowsenodestosearch c WHERE c.timestamp = :timestamp")})
-    @NamedQuery(name = "Childbrowsenodestosearch.findByBrowseNodeIdKeywordEndpoint", query = "SELECT c FROM Childbrowsenodestosearch c WHERE c.browseNodeId = :browseNodeId and c.keyword = :keyword and c.endpoint = :endpoint")
 public class Childbrowsenodestosearch implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

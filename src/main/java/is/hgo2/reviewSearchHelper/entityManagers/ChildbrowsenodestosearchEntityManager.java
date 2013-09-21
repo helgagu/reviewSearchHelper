@@ -89,9 +89,11 @@ public class ChildbrowsenodestosearchEntityManager {
     }
 
     /**
-     * Get browsenodes object from database by the field browsenodesId
+     * Get childbrowsenodestosearch object from database by the field browsenodesId
      * @param browsenodesId browsenodesId
-     * @return browsenodes object for the browsenodesId
+     * @param keyword the search keyword in use
+     * @param endpoint the amazon locale
+     * @return Childbrowsenodestosearch object for the browsenodesId, keyword and endpoint
      */
     public Childbrowsenodestosearch getChildbrowsenodestosearch(String browsenodesId, String keyword, String endpoint){
         try{
@@ -111,7 +113,7 @@ public class ChildbrowsenodestosearchEntityManager {
      */
     public List<Childbrowsenodestosearch> getAllNotResultFetched(){
         try{
-            List<Childbrowsenodestosearch> item = (List<Childbrowsenodestosearch>) em.createNamedQuery("Childbrowsenodestosearch.findByResultsFetched").setParameter("resultsFetched", 0);
+            List<Childbrowsenodestosearch> item = (List<Childbrowsenodestosearch>) em.createNamedQuery("Childbrowsenodestosearch.findByResultsFetched").setParameter("resultsFetched", 0).getResultList();
             return item;
         } catch (NoResultException e){
             return null;

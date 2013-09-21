@@ -57,8 +57,6 @@ public class Asin implements Serializable {
     private Collection<Books> booksCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idasin")
     private Collection<BrowsenodesAsin> browsenodesAsinCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "asinIdasin")
-    private Collection<Notaccessibleitems> notaccessibleitemsCollection;
 
     public Asin() {
     }
@@ -121,15 +119,6 @@ public class Asin implements Serializable {
 
     public void setBrowsenodesAsinCollection(Collection<BrowsenodesAsin> browsenodesAsinCollection) {
         this.browsenodesAsinCollection = browsenodesAsinCollection;
-    }
-
-    @XmlTransient
-    public Collection<Notaccessibleitems> getNotaccessibleitemsCollection() {
-        return notaccessibleitemsCollection;
-    }
-
-    public void setNotaccessibleitemsCollection(Collection<Notaccessibleitems> notaccessibleitemsCollection) {
-        this.notaccessibleitemsCollection = notaccessibleitemsCollection;
     }
 
     @Override
