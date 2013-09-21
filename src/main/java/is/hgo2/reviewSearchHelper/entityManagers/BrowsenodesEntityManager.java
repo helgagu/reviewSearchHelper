@@ -41,6 +41,7 @@ public class BrowsenodesEntityManager {
                                    String browseNodeId,
                                    String parentBrowseNodes,
                                    String exclusionReason,
+                                   String keyword,
                                    BinsearchResults binsearchResults){
         Browsenodes browsenodes = new Browsenodes();
         browsenodes.setTimestamp(new Date());
@@ -49,6 +50,7 @@ public class BrowsenodesEntityManager {
         browsenodes.setBrowseNodeId(browseNodeId);
         browsenodes.setParentBrowseNode(parentBrowseNodes);
         browsenodes.setExclusionReason(exclusionReason);
+        browsenodes.setKeyword(keyword);
         browsenodes.setIdbinsearchResults(binsearchResults);
         return browsenodes;
     }

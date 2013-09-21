@@ -106,7 +106,7 @@ public class BinSearch {
 
         Browsenodes existsAlready = browseNodesEm.getBrowseNode(browseNodeId, keyword);
         if(existsAlready == null){
-            Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, binsearchResults);
+            Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, keyword, binsearchResults);
             browseNodesEm.persist(browsenodes);
             return browsenodes;
         }else{
@@ -132,7 +132,7 @@ public class BinSearch {
                 setChildbrowsenodetosearch(binsearchResults, bn);
             }
         } else {
-            Browsenodes bnNull = browsenodesEm.browsenodes(null, "CannotFindBrowseNodeObject", searchParamBrowseNode, null, null, binsearchResults);
+            Browsenodes bnNull = browsenodesEm.browsenodes(null, "CannotFindBrowseNodeObject", searchParamBrowseNode, null, null, binsearchResults.getKeyword(), binsearchResults);
             browsenodesEm.persist(bnNull);
             setChildbrowsenodetosearch(binsearchResults, bnNull);
         }

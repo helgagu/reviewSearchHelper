@@ -5,7 +5,6 @@
 <persistence-unit name="reviewSearchHelperEntityPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <class>is.hgo2.reviewSearchHelper.entities.Browsenodes</class>
-    <class>is.hgo2.reviewSearchHelper.entities.Notaccessibleitems</class>
     <class>is.hgo2.reviewSearchHelper.entities.Books</class>
     <class>is.hgo2.reviewSearchHelper.entities.BinsearchResults</class>
     <class>is.hgo2.reviewSearchHelper.entities.BrowsenodesAsin</class>
