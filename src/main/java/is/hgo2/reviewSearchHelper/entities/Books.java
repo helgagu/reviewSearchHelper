@@ -61,16 +61,16 @@ public class Books implements Serializable {
     @Basic(optional = false)
     @Column(name = "idbooks")
     private Integer idbooks;
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "asin")
     private String asin;
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "isbn")
     private String isbn;
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "title")
     private String title;
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "authors")
     private String authors;
     @Column(name = "pages")

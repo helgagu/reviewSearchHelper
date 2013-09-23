@@ -58,7 +58,9 @@ public class BinSearch {
                           setChildbrowsenodetosearch(binsearchResults, browsenodes);
                         }
                     } else{
-                        getAllBrowseNodes(binsearchResults.getKeyword(), binsearchResults.getAmazonLocale(), browsenodes.getBrowseNodeId());
+                        if(browsenodes.getExclusionReason() == null){
+                            getAllBrowseNodes(binsearchResults.getKeyword(), binsearchResults.getAmazonLocale(), browsenodes.getBrowseNodeId());
+                        }
                     }
                 }
             }
@@ -104,14 +106,9 @@ public class BinSearch {
 
         String exclusionReason = ExclusionCriteria.excludeBrowseNodeId(browseNodeId);
 
-        Browsenodes existsAlready = browseNodesEm.getBrowseNode(browseNodeId, keyword);
-        if(existsAlready == null){
-            Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, keyword, binsearchResults);
-            browseNodesEm.persist(browsenodes);
-            return browsenodes;
-        }else{
-            return existsAlready;
-        }
+        Browsenodes browsenodes = browseNodesEm.browsenodes(binItemCount, binName, browseNodeId, parentBrowseNodeId, exclusionReason, keyword, binsearchResults);
+        browseNodesEm.persist(browsenodes);
+        return browsenodes;
 
     }
 
@@ -274,15 +271,41 @@ public class BinSearch {
             System.out.println(start);
 
             BinSearch binSearch = new BinSearch();
-            binSearch.getAllBrowseNodes(args[0], Constants.ENDPOINT_US, null);
-            String kwProductivityFinished = args[0] + " keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
-            System.out.println(kwProductivityFinished);
+//            binSearch.getAllBrowseNodes("Productivity", Constants.ENDPOINT_US, null);
+//            String ProductivityFinished = "Productivity keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+//            System.out.println(ProductivityFinished);
+//
+//            binSearch.getAllBrowseNodes("Personal Productivity", Constants.ENDPOINT_US, null);
+//            String PersonalProductivityFinished = "Personal Productivity keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+//            System.out.println(PersonalProductivityFinished);
+//
+//            binSearch.getAllBrowseNodes("Knowledge Worker Productivity", Constants.ENDPOINT_US, null);
+//            String kwProductivityFinished = "KW Productivity keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+//            System.out.println(kwProductivityFinished);
+
+            binSearch.getAllBrowseNodes("Efficient", Constants.ENDPOINT_US, null);
+            String efficietProductivityFinished = "Efficient keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+            System.out.println(efficietProductivityFinished);
+
+            binSearch.getAllBrowseNodes("Effective", Constants.ENDPOINT_US, null);
+        String effectiveProductivityFinished = "Effective keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+        System.out.println(effectiveProductivityFinished);
+
+        binSearch.getAllBrowseNodes("Effectiveness", Constants.ENDPOINT_US, null);
+        String effectivenessProductivityFinished = "Effectiveness keyword browsenodes, finishied datetime: " + fm.format(System.currentTimeMillis());
+        System.out.println(effectivenessProductivityFinished);
+
 
 
             long endTime = System.currentTimeMillis();
             System.out.println("DateTime of Search");
             System.out.println(start);
-            System.out.println(kwProductivityFinished);
+//        System.out.println(ProductivityFinished);
+//        System.out.println(PersonalProductivityFinished);
+// System.out.println(kwProductivityFinished);
+        System.out.println(efficietProductivityFinished);
+        System.out.println(effectiveProductivityFinished);
+        System.out.println(effectivenessProductivityFinished);
             long total = endTime - startTime;
             System.out.println("Total time" + total);
 

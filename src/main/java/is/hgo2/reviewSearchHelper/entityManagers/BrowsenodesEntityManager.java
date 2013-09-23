@@ -90,6 +90,11 @@ public class BrowsenodesEntityManager {
             return item;
         } catch (NoResultException e){
             return null;
+        } catch (NonUniqueResultException ue){
+            List<Browsenodes> firstResult = (List<Browsenodes>) em.createNamedQuery("Browsenodes.findByBrowseNodeIdKeyword")
+                    .setParameter("browseNodeId", browsenodesId)
+                    .setParameter("keyword", keyword).getResultList();
+            return firstResult.get(0);
         }
     }
 

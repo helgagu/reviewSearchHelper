@@ -135,8 +135,6 @@ public class AmazonClient {
         System.out.println(request);
         ClientResponse response = httpClient.sendGetRequest(request);
         ItemSearchResponse itemSearchResponse = response.getEntity(ItemSearchResponse.class);
-        util.writeOriginalResponseToFile(itemSearchResponse);
-
         return itemSearchResponse;
 
     }
@@ -155,7 +153,6 @@ public class AmazonClient {
         System.out.println(request);
         ClientResponse response = httpClient.sendGetRequest(request);
         ItemLookupResponse itemLookupResponse = response.getEntity(ItemLookupResponse.class);
-        util.writeOriginalResponseToFile(itemLookupResponse);
         return itemLookupResponse;
 
     }

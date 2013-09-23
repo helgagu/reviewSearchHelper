@@ -88,6 +88,7 @@ public class BookLookup {
         String publisher = "";
         BigInteger salesrank = BigInteger.ZERO;
         String authors = "";
+        String asinNumber = asin.getAsin();
 
 
         for(Items items : response.getItems()){
@@ -121,7 +122,7 @@ public class BookLookup {
             }
         }
 
-        Books book = bem.books(title, binding, detailUrl, edition, eisbn, asin, isbn, manufacturer, pages, publicationDate, publisher, salesrank, util.unmarshalResponse(response), authors, endpoint);
+        Books book = bem.books(title, binding, detailUrl, edition, eisbn, asin, isbn, manufacturer, pages, publicationDate, publisher, salesrank, util.unmarshalResponse(response), authors, endpoint, asinNumber);
         bem.persist(book);
         return book;
     }

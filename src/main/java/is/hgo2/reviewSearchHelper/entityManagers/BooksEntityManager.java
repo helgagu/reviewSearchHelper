@@ -60,10 +60,12 @@ public class BooksEntityManager {
                        BigInteger salesrank,
                        byte[] originalResponse,
                        String authors,
-                       String endpoint){
+                       String endpoint,
+                       String asinNumber){
         Books books = new Books();
         books.setTimestamp(new Date());
         books.setOriginalResponse(originalResponse);
+        books.setAsin(asinNumber);
         books.setAuthors(authors);
         books.setBinding(binding);
         books.setDetailPageUrl(detailUrl);
